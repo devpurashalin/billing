@@ -10,8 +10,13 @@ if (isset($_SESSION['username'])) {
 }
 if (isset($_POST['username']) && isset($_POST['password'])) {
     $username = $_POST['username'];
-    $password = $_POST['password'];
-    if ($username == 'admin' && $password == 'admin') {
+    $pwd = $_POST['password'];
+
+    include "connection.php";
+    $sql = "SELECT * FROM `users` WHERE `username` = '$username' AND BINARY  `password` = '$pwd'";
+    $result = $conn->query($sql);
+    if ($result && $result->num_rows > 0) {
+        // Login successful
         $_SESSION['username'] = $username;
         if (isset($_POST['remember'])) {
             setcookie('username', $username, time() + 60 * 60 * 24 * 7, "/billing");
@@ -19,9 +24,11 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         header('Location: index');
         exit();
     } else {
+        // Login failed
         echo 'Invalid username or password';
     }
 }
+
 
 ?>
 <!DOCTYPE html>
@@ -30,7 +37,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login@Bageshwar</title>
+    <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>

@@ -6,13 +6,14 @@ if (!isset($_SESSION['username'])) {
     } else {
         header("Location: login");
     }
+} else {
+    include "connection.php";
+    $tempsql = "SELECT * FROM users WHERE username = '" . $_SESSION['username'] . "'";
+    $tempresult = $conn->query($tempsql);
+    if ($tempresult->num_rows == 0) {
+        session_destroy();
+        setcookie('username', '', time() - 3600, '/billing');
+        header("Location: login");
+    }
 }
-$serverName = "localhost";
-$userName = "root";
-$password = "";
-$dbName = "invoice";
-$conn = mysqli_connect($serverName, $userName, $password, $dbName);
-
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+include "connection.php";
