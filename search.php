@@ -73,12 +73,15 @@
                 <th>Date</th>
                 <th>Amount</th>
                 <th>Payment Status</th>
-                <th>Payment Received</th>
+                <th>Payment Mode</th>
+                <th>Amount Received</th>
                 <th>Discount, if any</th>
                 <th>Action</th>
                 <th>View</th>
             </tr>
             <?php
+
+            $sql = "SELECT * FROM invoicetotal";
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if (isset($_POST['invoiceNo'])) {
                     $invoiceNo = $_POST['invoiceNo'];
@@ -90,52 +93,57 @@
                     $partyName = $_POST['partyName'];
                     $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName'";
                 }
-                $result = $conn->query($sql);
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $invoiceNo = $row['invoiceNo'];
-                        $partyName = $row['partyName'];
-                        $date = $row['date'];
-                        $TotalAmount = $row['amount'];
+            }
+            $result = $conn->query($sql);
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $invoiceNo = $row['invoiceNo'];
+                    $partyName = $row['partyName'];
+                    $date = $row['date'];
+                    $TotalAmount = $row['amount'];
             ?>
-                        <tr>
-                            <td><?php echo $invoiceNo; ?></td>
-                            <td><?php echo $partyName; ?></td>
-                            <td><?php echo $date; ?></td>
-                            <td><?php echo $TotalAmount; ?></td>
-                            <form action="invoiceUpdate.php" method="post">
-                                <td>
-                                    <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
-                                    <select class="form-control" name="paymentStatus" id="paymentStatus">
-                                        <option value="Received">Received</option>
-                                        <option value="NIL" <?php if ($row['paymentStatus'] == "NIL") echo "selected"; ?>>Not Received</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <select class="form-control" name="paymentReceived" id="paymentReceived">
-                                        <option value="">Select</option>
-                                        <option value="Cash" <?php if ($row['paymentReceived'] == "Cash") echo "selected"; ?>>Cash</option>
-                                        <option value="SB Account" <?php if ($row['paymentReceived'] == "SB Account") echo "selected"; ?>>SB Account</option>
-                                        <option value="Cheque" <?php if ($row['paymentReceived'] == "Cheque") echo "selected"; ?>>Cheque</option>
-                                        <option value="Paytm" <?php if ($row['paymentReceived'] == "Paytm") echo "selected"; ?>>Paytm</option>
-                                        <option value="Phonepe" <?php if ($row['paymentReceived'] == "Phonepe") echo "selected"; ?>>Phonepe</option>
-                                        <option value="Current Account" <?php if ($row['paymentReceived'] == "Current Account") echo "selected"; ?>>Current Account</option>
-
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" name="discount" class="form-control" value="<?php echo $row['discount']; ?>">
-                                </td>
-                                <td>
-                                    <button type="submit" class="btn btn-primary">Update</button>
-                                </td>
-                            </form>
+                    <tr>
+                        <td><?php echo $invoiceNo; ?></td>
+                        <td><?php echo $partyName; ?></td>
+                        <td><?php echo $date; ?></td>
+                        <td><?php echo $TotalAmount; ?></td>
+                        <form action="invoiceUpdate" method="post">
                             <td>
-                                <a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>" class="btn btn-primary">View</a>
+                                <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
+                                <select class="form-control" name="paymentStatus" id="paymentStatus">
+                                    <option value="Received" <?php if ($row['paymentStatus'] == "Received") echo "selected"; ?>>Received</option>
+                                    <option value="Gift" <?php if ($row['paymentStatus'] == "Gift") echo "selected"; ?>>Gift</option>
+                                    <option value="Partial Received" <?php if ($row['paymentStatus'] == "Partial Received") echo "selected"; ?>>Partial Received</option>
+                                    <option value="NIL" <?php if ($row['paymentStatus'] == "NIL") echo "selected"; ?>>Due</option>
+                                </select>
                             </td>
-                        </tr>
+                            <td>
+                                <select class="form-control" name="paymentMode" id="paymentMode">
+                                    <option value="">Select</option>
+                                    <option value="Cash" <?php if ($row['paymentMode'] == "Cash") echo "selected"; ?>>Cash</option>
+                                    <option value="SB Account" <?php if ($row['paymentMode'] == "SB Account") echo "selected"; ?>>SB Account</option>
+                                    <option value="Cheque" <?php if ($row['paymentMode'] == "Cheque") echo "selected"; ?>>Cheque</option>
+                                    <option value="Paytm" <?php if ($row['paymentMode'] == "Paytm") echo "selected"; ?>>Paytm</option>
+                                    <option value="Phonepe" <?php if ($row['paymentMode'] == "Phonepe") echo "selected"; ?>>Phonepe</option>
+                                    <option value="Current Account" <?php if ($row['paymentMode'] == "Current Account") echo "selected"; ?>>Current Account</option>
+
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
+                            </td>
+                            <td>
+                                <input type="text" name="discount" class="form-control" value="<?php echo $row['discount']; ?>">
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </td>
+                        </form>
+                        <td>
+                            <a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>" class="btn btn-primary">View</a>
+                        </td>
+                    </tr>
             <?php
-                    }
                 }
             }
             ?>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate PDF</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.0/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+
+    <button id="generate-pdf">Generate PDF</button>
+
+    <script>
+        window.jspdf = window.jspdf.jsPDF;
+        document.getElementById('generate-pdf').addEventListener('click', function () {
+            const element = document.body; // Entire body content will be captured
+
+            // Configure the options for PDF generation
+            const options = {
+                filename: 'example.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            // Use html2pdf library to generate and save the PDF
+            html2pdf().from(element).set(options).save();
+        });
+    </script>
+
+</body>
+
+</html>

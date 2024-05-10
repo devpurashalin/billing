@@ -9,34 +9,16 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <style>
-        /* .table th,
-        .table td {
-            border: none;
-        } */
+        #Options {
+            position: absolute;
+            width: 30%;
+            z-index: 999;
+        }
     </style>
 </head>
 
 <body>
     <?php include 'navbar.php'; ?>
-    <?php
-    $query = "SELECT * FROM `party`;";
-    $result = $conn->execute_query($query);
-    $data = [];
-    echo '<datalist id="partyNameList">';
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
-        echo '<option value="' . $row['name'] . '">';
-    }
-    echo '</datalist>';
-    ?>
-    <script>
-        let partyData = <?php echo json_encode($data); ?>;
-
-        function findIndexById(id) {
-            return partyData.findIndex(item => item.name === id);
-        }
-    </script>
-
     <div class="container my-5" id="forPrint">
         <form action="invoiceSave" method="post">
             <table class="table table-bordered" id="invoiceTable">
@@ -58,16 +40,43 @@
                 <tr>
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
                     <?php
-                    $result = $conn->execute_query("SELECT max(`invoiceNo`) FROM `invoice`");
-                    $maxInvoiceID = $result->fetch_assoc()['max(`invoiceNo`)'];
+                    $result = $conn->execute_query("SELECT count(`invoiceNo`) FROM `invoiceTotal`");
+                    $maxInvoiceID = $result->fetch_assoc()['count(`invoiceNo`)'];
                     ?>
-                    <td colspan="2"><input class="form-control" value="<?php echo $maxInvoiceID+1; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td colspan="2"><input class="form-control" value="DP/INVOICE/<?php echo $maxInvoiceID + 1; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
                     <td class="text-end"><label for="date">Date</label></td>
                     <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
                 </tr>
                 <tr>
+
                     <td class="text-end"><label for="partyName">Name of Party</label></td>
-                    <td colspan="2"><input class="form-control" onchange="fillData();" type="text" list="partyNameList" name="partyName" id="partyName"></td>
+
+                    <td colspan="2">
+                        <input type="hidden" name="partyName" id="partyName">
+                        <input type="text" id="searchInput" autocomplete="off" onclick="displayOptions()" class="form-control" placeholder="Search...">
+                        <div id="Options" style="display: none;">
+                            <div id="optionsContainer" class="form-control bg-light">
+                                <div onclick="setValue(this)" class="option mb-1">Select</div>
+                                <?php
+                                $query = "SELECT * FROM `party` WHERE status='ACTIVE';";
+                                $result = $conn->execute_query($query);
+                                $data = [];
+                                while ($row = $result->fetch_assoc()) {
+                                    $data[] = $row;
+                                    echo '<div onclick="setValue(this)" class="option mb-1">' . $row['name'] . '</div>';
+                                }
+                                ?>
+                            </div>
+                        </div>
+                        <script>
+                            let partyData = <?php echo json_encode($data); ?>;
+
+                            function findIndexById(id) {
+                                return partyData.findIndex(item => item.name === id);
+                            }
+                        </script>
+                        </select>
+                    </td>
                     <input type="hidden" name="partyId" id="partyId">
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
                     <td><input class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
@@ -79,11 +88,11 @@
                     <td><input class="form-control" type="text" name="number" id="number"></td>
                 </tr>
                 <tr class="text-center">
-                    <td class="fw-bold bg-warning">S. No.</td>
-                    <td class="fw-bold bg-warning">Description</td>
-                    <td class="fw-bold bg-warning">Qty.</td>
-                    <td class="fw-bold bg-warning">Rate</td>
-                    <td class="fw-bold bg-warning">Amount Rs.</td>
+                    <td class="fw-bold bg-light">S. No.</td>
+                    <td class="fw-bold bg-light">Description</td>
+                    <td class="fw-bold bg-light">Qty.</td>
+                    <td class="fw-bold bg-light">Rate</td>
+                    <td class="fw-bold bg-light">Amount Rs.</td>
                 </tr>
                 <tr>
                     <td><input type="text" class="form-control" id="sno1" name="sno1" value="1" required></td>
@@ -101,11 +110,14 @@
                     <td colspan="4"><input type="text" class="form-control" id="total_amt_words" name="total_amt_words" readonly></td>
                 </tr>
                 <tr>
-                    <td><button class="btn btn-secondary" type="button" onclick="addRow()">Add Row</button></td>
+                    <td colspan="5">
+                        <button class="btn btn-secondary" type="button" onclick="addRow()">Add Row</button>
+                        <button class="btn btn-danger" type="button" onclick="deleteRow()">Delete Row</button>
+                    </td>
                 </tr>
                 <tr>
                     <td colspan="4"><b>Terms and Conditions:</b></td>
-                    <td style="color: red;">For: <b>Deepak Printers</b></td>
+                    <td class="text-danger">For: <b>Deepak Printers</b></td>
                 </tr>
 
                 <tr>
@@ -124,8 +136,8 @@
                 </tr>
             </table>
             <div class="d-flex justify-content-evenly">
-                <button class="btn btn-warning" name="submit" value="Save">Save</button>
-                <button class="btn btn-primary" name="submit" value="Print">Print</button>
+                <button class="btn btn-warning fw-bold" name="submit" value="Save">Save</button>
+                <button class="btn btn-primary fw-bold" name="submit" value="Print">Print</button>
             </div>
         </form>
     </div>
@@ -180,8 +192,24 @@
                 alert('Please fill all fields of current row');
         }
 
+        function deleteRow() {
+            let table = document.getElementById("invoiceTable");
+            // Insert the new row before the last row (total amount row)
+            let row = table.rows.length;
+
+            confirmation = confirm("Are you want to delete?");
+            if (confirmation && count != 0) {
+                table.deleteRow(row - 8);
+                count--;
+            } else if (!confirmation) {
+            } else {
+                alert('Empty');
+            }
+        }
+
         function isCurrentRowFilled() {
             let currRow = count;
+            if (currRow === 0) return true;
             return (
                 document.getElementById("sno" + currRow).value !== "" &&
                 document.getElementById("description" + currRow).value !== "" &&
@@ -296,6 +324,37 @@
                 res = "Zero";
             }
             return res;
+        }
+
+        function displayOptions() {
+            var options = document.getElementById("Options");
+            if (options.style.display === "none") {
+                options.style.display = "block";
+            } else {
+                options.style.display = "none";
+            }
+        }
+
+        // Filter options based on search input
+        document.getElementById("searchInput").addEventListener("input", function() {
+            var searchValue = this.value.toLowerCase();
+            var options = document.getElementsByClassName("option");
+            for (var i = 0; i < options.length; i++) {
+                var optionText = options[i].textContent.toLowerCase();
+                if (optionText.indexOf(searchValue) > -1) {
+                    options[i].style.display = "";
+                } else {
+                    options[i].style.display = "none";
+                }
+            }
+        });
+
+        function setValue(option) {
+            var value = option.textContent;
+            document.getElementById("partyName").value = value;
+            document.getElementById("Options").style.display = "none";
+            document.getElementById("searchInput").value = value;
+            fillData();
         }
     </script>
 

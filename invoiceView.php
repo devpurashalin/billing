@@ -2,6 +2,8 @@
 include 'db.php';
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $invoiceNo = $_GET['invoiceNo'];
+} else {
+    exit;
 }
 $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
 $result = $conn->query($sql);
@@ -18,6 +20,9 @@ if ($result->num_rows > 0) {
     $row1 = $result1->fetch_assoc();
     $address = $row1['address'];
     $GST_PAN = $row1['GST_PAN'];
+} else {
+    echo "No Record Found";
+    exit;
 }
 ?>
 
@@ -65,10 +70,21 @@ if ($result->num_rows > 0) {
             height: 4vh;
         }
     </style>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+        function printButton() {
+            window.print();
+        }
+    </script>
 </head>
 
 <body>
     <?php include 'navbar.php'; ?>
+    <div class="d-flex d-print-none">
+        <button type="button" class="btn btn-primary" onclick="printButton()">Print</button>
+    </div>
     <div class="my-5 container h-100" id="forPrint">
         <table class="table" id="invoiceTable">
             <tr>

@@ -8,21 +8,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $date = $_POST['date'];
     $TotalAmount = $_POST['total_amt'];
     $count = 1;
+    echo $invoiceNo . " " . $partyId . " " . $partyName . " " . $number . " " . $date . " " . $TotalAmount . "<br>";
     while (isset($_POST["sno" . $count])) {
         $sno = $_POST["sno" . $count];
         $description = $_POST["description" . $count];
         $quantity = $_POST["qty" . $count];
         $rate = $_POST["rate" . $count];
         $amount = $_POST["amount_rs" . $count];
+        echo $sno . " " . $description . " " . $quantity . " " . $rate . " " . $amount . "<br>";
         $conn->execute_query("INSERT INTO `invoice` (`invoiceNo`, `partyId`, `partyName`, `date`, `SNo`, `description`, `qty`, `rate`, `amount`) VALUES 
         ('$invoiceNo', '$partyId', '$partyName', '$date', '$sno', '$description', '$quantity', '$rate', '$amount');");
         $count++;
     }
     $conn->execute_query("INSERT INTO `invoicetotal`
-        (`invoiceNo`, `partyId`, `partyName`, `number`, `date`, `amount`, `paymentStatus`, `paymentReceived`, `discount`) VALUES 
+        (`invoiceNo`, `partyId`, `partyName`, `number`, `date`, `amount`, `paymentStatus`, `paymentMode`, `discount`) VALUES 
         ('$invoiceNo','$partyId', '$partyName', '$number','$date','$TotalAmount', 'NIL','NIL','NIL')");
-    if($_POST['submit'] == 'Save')
+    if ($_POST['submit'] == 'Save')
         header("Location: invoiceCreate");
-    else if($_POST['submit'] == 'Print')
+    else if ($_POST['submit'] == 'Print')
         header("Location: invoiceView?invoiceNo=$invoiceNo");
 }

@@ -13,7 +13,7 @@
 <body>
     <?php include "navbar.php"; ?>
     <div class="container mt-4">
-        <form action="./userModify.php" method="post">
+        <form action="./userModify" method="post">
             <table class="table table-bordered">
                 <tr>
                     <td colspan="3" class="text-center h2">Add User</td>
@@ -42,9 +42,9 @@
         <table class="table table-striped table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Username</th>
-                    <th scope="col">Action</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,7 +56,7 @@
                         echo "<tr>";
                         echo "<td>" . $row['name'] . "</td>";
                         echo "<td>" . $row['username'] . "</td>";
-                        echo "<td><a href='userModify.php?id=" . $row['username'] . "'>Delete</a></td>";
+                        echo "<td><button class='btn btn-danger' onclick='deleteUser(\"" . $row['username'] . "\")'>Delete</button></td>";
                         echo "</tr>";
                     }
                 } else {
@@ -66,6 +66,13 @@
             </tbody>
         </table>
     </div>
+    <script>
+        function deleteUser(id) {
+            if (confirm("Are you sure you want to delete this user?")) {
+                window.location.href = "userModify.php?id=" + id;
+            }
+        }
+    </script>
 </body>
 
 </html>

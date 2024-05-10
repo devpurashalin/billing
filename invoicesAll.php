@@ -22,6 +22,9 @@
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Payment Status</th>
+                    <th>Amount Received</th>
+                    <th>Payment Mode</th>
+                    <th>Discount, if any</th>
                 </tr>
             </thead>
             <?php
@@ -35,12 +38,16 @@
                     while ($row = $result->fetch_assoc()) {
                     ?>
                         <tr>
-                            <td><?php echo $row['invoiceNo']; ?></td>
+                            <td><a href="invoiceView?invoiceNo=<?php echo $row['invoiceNo']; ?>"><?php echo $row['invoiceNo']; ?></a></td>
                             <td><?php echo $row['partyId']; ?></td>
                             <td><?php echo $row['partyName']; ?></td>
                             <td><?php echo $row['date']; ?></td>
                             <td><?php echo $row['amount']; ?></td>
                             <td><?php echo $row['paymentStatus']; ?></td>
+                            <td><?php echo $row['amountReceived']; ?></td>
+                            <td><?php echo $row['paymentMode']; ?></td>
+                            <td><?php echo $row['discount']; ?></td>
+                            
                         </tr>
                 <?php
                     }

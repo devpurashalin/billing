@@ -16,22 +16,28 @@ include 'db.php';
 <body>
     <?php include 'navbar.php'; ?>
     <div class="container mt-5">
-        <form action="./partyModify.php" method="post">
+        <form action="./partyModify" method="post">
             <table class="table table-bordered">
                 <tr>
-                    <td><label for="ID">Customer ID No</label></td>
+                    <td><label for="ID">Customer ID</label></td>
                     <td>:</td>
-                    <td><input type="text" name="ID" id="ID" class="form-control" required></td>
+                    <?php
+                    $sql = "SELECT count(ID) as ID FROM party";
+                    $result = mysqli_query($conn, $sql);
+                    $row = mysqli_fetch_assoc($result);
+                    $id = date("Y") . "/" . $row['ID'] + 1;
+                    ?>
+                    <td><input type="text" name="ID" id="ID" class="form-control" required value="DP/<?php echo $id; ?>"></td>
                 </tr>
                 <tr>
                     <td><label for="name">Name of Customer</label></td>
                     <td>:</td>
-                    <td><input type="text" name="name" id="name" class="form-control" required></td>
+                    <td><input type="text" oninput="capitalize()" name="name" id="name" class="form-control" required></td>
                 </tr>
                 <tr>
                     <td><label for="address">Address</label></td>
                     <td>:</td>
-                    <td><input type="text" name="address" id="address" class="form-control" required></td>
+                    <td><input type="text" oninput="capitalize()" name="address" id="address" class="form-control" required></td>
                 </tr>
                 <tr>
                     <td><label for="number">Mobile Number</label></td>
@@ -39,12 +45,17 @@ include 'db.php';
                     <td><input type="text" name="number" id="number" class="form-control" pattern="[0-9]{10}" title="Please enter a 10-digit number" required></td>
                 </tr>
                 <tr>
-                    <td><label for="GST_PAN">GST/PAN</label></td>
+                    <td><label for="email">Email</label></td>
                     <td>:</td>
-                    <td><input type="text" name="GST_PAN" id="GST_PAN" class="form-control" required></td>
+                    <td><input type="email" name="email" id="email" class="form-control" required></td>
                 </tr>
                 <tr>
-                    <td class="text-center" colspan="3"><button class="btn btn-primary" type="submit">SUBMIT</button></td>
+                    <td><label for="GST_PAN">GST/PAN</label></td>
+                    <td>:</td>
+                    <td><input type="text" oninput="capitalize()" name="GST_PAN" id="GST_PAN" class="form-control" required></td>
+                </tr>
+                <tr>
+                    <td class="text-center" colspan="3"><button class="btn btn-primary" name="submit" value="add" type="submit">SUBMIT</button></td>
                 </tr>
             </table>
         </form>
@@ -52,17 +63,20 @@ include 'db.php';
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>
-                    <th>Customer ID No.</th>
+                    <th>Customer ID</th>
                     <th>Name of Customer</th>
                     <th>Address</th>
                     <th>Mobile Number</th>
+                    <th>Email</th>
                     <th>GST/PAN</th>
-                    <th>Action</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
+                    <th>Inactive/Active</th>
                 </tr>
             </thead>
             <tbody>
                 <?php
-                $sql = "SELECT * FROM party";
+                $sql = "SELECT * FROM party WHERE status != 'DELETED'";
                 $result = mysqli_query($conn, $sql);
                 if (mysqli_num_rows($result) > 0) {
                     while ($row = mysqli_fetch_assoc($result)) {
@@ -71,16 +85,40 @@ include 'db.php';
                         echo "<td>" . $row['name'] . "</td>";
                         echo "<td>" . $row['address'] . "</td>";
                         echo "<td>" . $row['number'] . "</td>";
+                        echo "<td>" . $row['email'] . "</td>";
                         echo "<td>" . $row['GST_PAN'] . "</td>";
-                        echo "<td><a class='text-dark' href='partyModify.php?id=" . $row['ID'] . "'><i class='fa fa-trash'></i></a></td>";
+                        echo "<td><a class='text-dark' href='partyModify.php?id=" . $row['ID'] . "&action=edit'><i class='fa fa-edit'></i></a>";
+                        echo '<td><i style="cursor: pointer;" class="fa fa-trash" onclick="deleteConfirm(\'' . $row['ID'] .'\')"></i>';
+                        if ($row['status'] == 'ACTIVE') {
+                            echo '<td><a class="text-dark" href="partyModify.php?id=' . $row['ID'] . '&action=INACTIVE"><i class="fa fa-toggle-on"></i></a></td>';
+                        } else {
+                            echo '<td><a class="text-dark" href="partyModify.php?id=' . $row['ID'] . '&action=ACTIVE"><i class="fa fa-toggle-off"></i></a></td>';
+                        }
                     }
                 } else {
-                    echo "<tr><td colspan='6'>No Data Found</td></tr>";
+                    echo "<tr><td colspan='8'>No Data Found</td></tr>";
                 }
                 ?>
             </tbody>
         </table>
     </div>
+    <script>
+        function capitalize() {
+            var x = document.getElementById("name");
+            x.value = x.value.toUpperCase();
+            var y = document.getElementById("address");
+            y.value = y.value.toUpperCase();
+            var z = document.getElementById("GST_PAN");
+            z.value = z.value.toUpperCase();
+        }
+
+        function deleteConfirm(id) {
+            let confirmation = confirm("Are you sure you want to delete this record?");
+            if (confirmation) {
+                window.location.href = "partyModify.php?id=" + id + "&action=delete";
+            }
+        }
+    </script>
 </body>
 
 </html>

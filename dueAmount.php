@@ -30,23 +30,28 @@
                 <th>Due Amount</th>
             </tr>
             <?php
-            $sql = "SELECT * FROM invoicetotal WHERE paymentStatus = 'NIL'";
+            $sql = "SELECT * FROM party WHERE status != 'DELETED'";
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    $partyId = $row['partyId'];
-                    $partyName = $row['partyName'];
+                    $partyId = $row['ID'];
+                    $partyName = $row['name'];
                     $number = $row['number'];
-                    $sql1 = "SELECT SUM(amount) as total FROM invoicetotal WHERE partyId = '$partyId'";
+                    $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived FROM invoicetotal WHERE partyId = '$partyId' AND (paymentStatus = 'NIL' OR paymentStatus = 'Partial Received')";
                     $result1 = $conn->query($sql1);
                     $row1 = $result1->fetch_assoc();
+                    $amountReceived = $row1['amountReceived'];
                     $total = $row1['total'];
+                    $dueAmount = $total - $amountReceived;
+                    if ($dueAmount == 0) {
+                        continue;
+                    }
             ?>
                     <tr>
                         <td><?php echo $partyId; ?></td>
                         <td><?php echo $partyName; ?></td>
                         <td><?php echo $number; ?></td>
-                        <td><?php echo $total; ?></td>
+                        <td><?php echo $dueAmount; ?></td>
                     </tr>
             <?php
                 }
