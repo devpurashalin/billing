@@ -70,20 +70,12 @@ if ($result->num_rows > 0) {
             height: 4vh;
         }
     </style>
-    <script>
-        window.onload = function() {
-            window.print();
-        }
-        function printButton() {
-            window.print();
-        }
-    </script>
 </head>
 
 <body>
     <?php include 'navbar.php'; ?>
     <div class="d-flex d-print-none">
-        <button type="button" class="btn btn-primary" onclick="printButton()">Print</button>
+        <button class="btn btn-primary mx-auto my-3" onclick="window.print()">Print</button>
     </div>
     <div class="my-5 container h-100" id="forPrint">
         <table class="table" id="invoiceTable">

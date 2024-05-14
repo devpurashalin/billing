@@ -40,7 +40,7 @@
                 <tr>
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
                     <?php
-                    $result = $conn->execute_query("SELECT count(`invoiceNo`) FROM `invoiceTotal`");
+                    $result = $conn->execute_query("SELECT count(`invoiceNo`) FROM `invoicetotal`");
                     $maxInvoiceID = $result->fetch_assoc()['count(`invoiceNo`)'];
                     ?>
                     <td colspan="2"><input class="form-control" value="DP/INVOICE/<?php echo $maxInvoiceID + 1; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>

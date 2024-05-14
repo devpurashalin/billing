@@ -13,7 +13,13 @@
 <body>
     <?php include "navbar.php"; ?>
     <div class="container my-5">
-        <table class="table table-bordered">
+        <div class="container mb-3 row">
+            <div class="col-md col-0"></div>
+            <div class="col-md-4">
+                <input class="form-control" onkeyup="search(this);" type="text" id="searchInput" placeholder="Search">
+            </div>
+        </div>
+        <table class="table table-bordered" id="invoiceData">
             <thead>
                 <tr>
                     <th>Invoice No</th>
@@ -47,7 +53,7 @@
                             <td><?php echo $row['amountReceived']; ?></td>
                             <td><?php echo $row['paymentMode']; ?></td>
                             <td><?php echo $row['discount']; ?></td>
-                            
+
                         </tr>
                 <?php
                     }
@@ -56,6 +62,21 @@
                 </tbody>
         </table>
     </div>
+    <script>
+        function search(input) {
+            let inputValue = input.value.toLowerCase();
+            let rows = document.querySelectorAll("#invoiceData tbody tr");
+
+            rows.forEach(row => {
+                let rowData = row.textContent.toLowerCase();
+                if (rowData.includes(inputValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

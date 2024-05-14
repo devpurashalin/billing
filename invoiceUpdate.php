@@ -13,7 +13,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 discount = '$discount' 
             WHERE invoiceNo = '$invoiceNo'";
     if ($conn->query($sql) === TRUE) {
-        header("Location: search");
+?>
+        <script>
+            alert('Record updated successfully');
+            window.location.href = 'search';
+        </script>
+<?php
     } else {
         echo "Error updating record: " . $conn->error;
     }

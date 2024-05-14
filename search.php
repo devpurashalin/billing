@@ -8,6 +8,16 @@
     <title>Search</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        function formSubmit() {
+            if (document.getElementById('partyId').value == "" && document.getElementById('partyName').value == "" && document.getElementById('invoiceNo').value == "") {
+                document.getElementById('formError').innerHTML = "*Please select any one field";
+                return false;
+            } else {
+                document.querySelector('form').submit();
+            }
+        }
+    </script>
 </head>
 
 <body>
@@ -18,7 +28,7 @@
                 <div class="col-md-3">
                     Party ID
                     <select class="form-control" name="partyId" id="partyId">
-                        <option disabled selected>Select</option>
+                        <option disabled value="" selected>Select</option>
                         <?php
                         $sql = "SELECT * FROM party";
                         $result = $conn->query($sql);
@@ -33,7 +43,7 @@
                 <div class="col-md-3">
                     Party Name
                     <select class="form-control" name="partyName" id="partyName">
-                        <option disabled selected>Select</option>
+                        <option disabled value="" selected>Select</option>
                         <?php
                         $sql = "SELECT * FROM party";
                         $result = $conn->query($sql);
@@ -48,7 +58,7 @@
                 <div class="col-md-3">
                     Invoice Number
                     <select class="form-control" name="invoiceNo" id="invoiceNo">
-                        <option disabled selected>Select</option>
+                        <option disabled value="" selected>Select</option>
                         <?php
                         $sql = "SELECT * FROM invoicetotal";
                         $result = $conn->query($sql);
@@ -60,9 +70,11 @@
                         ?>
                     </select>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-3">
                     <br>
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="button" onclick="formSubmit()" class="btn btn-primary">Search</button>
+                    <br>
+                    <p id="formError" class="text-danger"></p>
                 </div>
             </div>
         </form>
@@ -80,23 +92,27 @@
                 <th>View</th>
             </tr>
             <?php
-
-            $sql = "SELECT * FROM invoicetotal";
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                if (isset($_POST['invoiceNo'])) {
+                if (isset($_POST['invoiceNo']) && $_POST['invoiceNo'] != "") {
                     $invoiceNo = $_POST['invoiceNo'];
                     $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
-                } else if (isset($_POST['partyId'])) {
+                } else if (isset($_POST['partyId'])  && $_POST['partyId'] != "") {
                     $partyId = $_POST['partyId'];
                     $sql = "SELECT * FROM invoicetotal WHERE partyId = '$partyId'";
-                } else if (isset($_POST['partyName'])) {
+                } else if (isset($_POST['partyName']) && $_POST['partyName'] != "") {
                     $partyName = $_POST['partyName'];
                     $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName'";
+                } else {
+                    exit;
                 }
+            } else {
+                exit;
             }
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
+                $count = 0;
                 while ($row = $result->fetch_assoc()) {
+                    $count++;
                     $invoiceNo = $row['invoiceNo'];
                     $partyName = $row['partyName'];
                     $date = $row['date'];
@@ -106,11 +122,11 @@
                         <td><?php echo $invoiceNo; ?></td>
                         <td><?php echo $partyName; ?></td>
                         <td><?php echo $date; ?></td>
-                        <td><?php echo $TotalAmount; ?></td>
+                        <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
                         <form action="invoiceUpdate" method="post">
                             <td>
                                 <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
-                                <select class="form-control" name="paymentStatus" id="paymentStatus">
+                                <select class="form-control" onchange="amountUpdate(<?php echo $count; ?>)" name="paymentStatus" id="paymentStatus<?php echo $count; ?>">
                                     <option value="Received" <?php if ($row['paymentStatus'] == "Received") echo "selected"; ?>>Received</option>
                                     <option value="Gift" <?php if ($row['paymentStatus'] == "Gift") echo "selected"; ?>>Gift</option>
                                     <option value="Partial Received" <?php if ($row['paymentStatus'] == "Partial Received") echo "selected"; ?>>Partial Received</option>
@@ -126,11 +142,10 @@
                                     <option value="Paytm" <?php if ($row['paymentMode'] == "Paytm") echo "selected"; ?>>Paytm</option>
                                     <option value="Phonepe" <?php if ($row['paymentMode'] == "Phonepe") echo "selected"; ?>>Phonepe</option>
                                     <option value="Current Account" <?php if ($row['paymentMode'] == "Current Account") echo "selected"; ?>>Current Account</option>
-
                                 </select>
                             </td>
                             <td>
-                                <input type="number" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
+                                <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
                             </td>
                             <td>
                                 <input type="text" name="discount" class="form-control" value="<?php echo $row['discount']; ?>">
@@ -148,7 +163,21 @@
             }
             ?>
     </div>
-
+    <script>
+        function amountUpdate(element) {
+            var totalAmount = document.getElementById("totalAmount" + element).innerHTML;
+            console.log(totalAmount);
+            var paymentStatus = document.getElementById("paymentStatus" + element).value;
+            console.log(paymentStatus);
+            if (paymentStatus == "Received") {
+                document.getElementById("amountReceived" + element).value = totalAmount;
+            } else if (paymentStatus == "Gift") {
+                document.getElementById("amountReceived" + element).value = 0;
+            } else if (paymentStatus == "NIL") {
+                document.getElementById("amountReceived" + element).value = 0;
+            }
+        }
+    </script>
 </body>
 
 </html>
