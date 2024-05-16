@@ -1,4 +1,27 @@
-<?php include 'db.php'; ?>
+<?php
+include 'db.php';
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $invoiceNo = $_POST['invoiceNo'];
+} else {
+    exit;
+}
+$sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+$invoiceNo = $row['invoiceNo'];
+$partyId = $row['partyId'];
+$partyName = $row['partyName'];
+$number = $row['number'];
+$date = $row['date'];
+$amountWord = $row['amountWord'];
+$TotalAmount = $row['amount'];
+$sql1 = "SELECT * FROM party WHERE ID = '$partyId'";
+$result1 = $conn->query($sql1);
+$row1 = $result1->fetch_assoc();
+$address = $row1['address'];
+$GST_PAN = $row1['GST_PAN'];
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -43,21 +66,17 @@
                 </tr>
                 <tr>
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <?php
-                    $result = $conn->execute_query("SELECT count(`invoiceNo`) FROM `invoicetotal`");
-                    $maxInvoiceID = $result->fetch_assoc()['count(`invoiceNo`)'];
-                    ?>
-                    <td colspan="2"><input class="form-control" value="DP/INVOICE/<?php echo $maxInvoiceID + 1; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td colspan="2"><input readonly class="form-control" value="<?php echo $invoiceNo; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
                     <td class="text-end"><label for="date">Date</label></td>
-                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
+                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo $date; ?>"></td>
                 </tr>
                 <tr>
 
                     <td class="text-end"><label for="partyName">Name of Party</label></td>
 
                     <td colspan="2">
-                        <input type="hidden" name="partyName" id="partyName">
-                        <input type="text" id="searchInput" autocomplete="off" onclick="displayOptions()" class="form-control" placeholder="Search...">
+                        <input type="hidden" name="partyName" id="partyName" value="<?php echo $partyName; ?>">
+                        <input type="text" id="searchInput" autocomplete="off" onclick="displayOptions()" class="form-control" placeholder="Search..." value="<?php echo $partyName; ?>">
                         <div id="Options" style="display: none;">
                             <div id="optionsContainer" class="form-control bg-light">
                                 <div onclick="setValue(this)" class="option mb-1">Select</div>
@@ -81,15 +100,15 @@
                         </script>
                         </select>
                     </td>
-                    <input type="hidden" name="partyId" id="partyId">
+                    <input type="hidden" name="partyId" id="partyId" value="<?php echo $partyId; ?>">
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
-                    <td><input class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td><input class="form-control" type="text" name="GST_PAN" id="GST_PAN" value="<?php echo $GST_PAN; ?>"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
-                    <td colspan="2"><input class="form-control" type="text" name="address" id="address"></td>
+                    <td colspan="2"><input class="form-control" type="text" name="address" id="address" value="<?php echo $address; ?>"></td>
                     <td class="text-end"><label for="number">Mobile No.</label></td>
-                    <td><input class="form-control" type="text" name="number" id="number"></td>
+                    <td><input class="form-control" type="text" name="number" id="number" value="<?php echo $number; ?>"></td>
                 </tr>
                 <tr class="text-center">
                     <td class="fw-bold bg-light">S. No.</td>
@@ -98,20 +117,30 @@
                     <td class="fw-bold bg-light">Rate</td>
                     <td class="fw-bold bg-light">Amount Rs.</td>
                 </tr>
-                <tr>
-                    <td><input type="text" class="form-control" id="sno1" name="sno1" value="1" required></td>
-                    <td><input type="text" class="form-control" id="description1" name="description1" required></td>
-                    <td><input type="text" oninput="updateAmount(1)" class="form-control" id="qty1" name="qty1" required></td>
-                    <td><input type="text" oninput="updateAmount(1)" class="form-control" id="rate1" name="rate1" required></td>
-                    <td><input type="text" class="form-control" id="amount_rs1" name="amount_rs1" readonly></td>
-                </tr>
+                <?php 
+                $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
+                $result2 = $conn->query($sql2);
+                if ($result2->num_rows > 0) {
+                    $count = 0;
+                    while ($row2 = $result2->fetch_assoc()) {
+                        $count++;
+                        echo "<tr>";
+                        echo "<td><input type='text' class='form-control' id='sno".$row2['SNo']."' name='sno".$row2['SNo']."' value='".$row2['SNo']."' required></td>";
+                        echo "<td><input type='text' class='form-control' id='description".$row2['SNo']."' name='description".$row2['SNo']."' value='".$row2['description']."' required></td>";
+                        echo "<td><input type='text' oninput='updateAmount(".$row2['SNo'].")' class='form-control' id='qty".$row2['SNo']."' name='qty".$row2['SNo']."' value='".$row2['qty']."' required></td>";
+                        echo "<td><input type='text' oninput='updateAmount(".$row2['SNo'].")' class='form-control' id='rate".$row2['SNo']."' name='rate".$row2['SNo']."' value='".$row2['rate']."' required></td>";
+                        echo "<td><input type='text' class='form-control' id='amount_rs".$row2['SNo']."' name='amount_rs".$row2['SNo']."' value='".$row2['amount']."' readonly></td>";
+                        echo "</tr>";
+                    }
+                }
+                ?>
                 <tr>
                     <td colspan="4" class="text-end">Total Amount</td>
-                    <td><input type="text" class="form-control" id="total_amt" name="total_amt" readonly></td>
+                    <td><input type="text" class="form-control" id="total_amt" name="total_amt" value="<?php echo $TotalAmount; ?>" readonly></td>
                 </tr>
                 <tr>
                     <td>Rs. (in words)</td>
-                    <td colspan="4"><input type="text" class="form-control" id="total_amt_words" name="total_amt_words" readonly></td>
+                    <td colspan="4"><input type="text" class="form-control" id="total_amt_words" name="total_amt_words" value="<?php echo $amountWord; ?>" readonly></td>
                 </tr>
                 <tr>
                     <td colspan="5">
@@ -140,7 +169,7 @@
                 </tr>
             </table>
             <div class="d-flex justify-content-evenly">
-                <button class="btn btn-warning fw-bold" name="submit" value="Save">Save</button>
+                <button class="btn btn-warning fw-bold" name="submit" value="Update">Update</button>
                 <button class="btn btn-primary fw-bold" name="submit" value="Print">Print</button>
             </div>
         </form>
@@ -166,7 +195,7 @@
             document.getElementById("amount_rs" + number).value = amount;
             updateTotalAmount();
         }
-        let count = 1;
+        let count = <?php echo $count; ?>;
 
         function addRow() {
             if (isCurrentRowFilled()) {
@@ -205,6 +234,7 @@
             if (confirmation && count != 0) {
                 table.deleteRow(row - 8);
                 count--;
+                updateTotalAmount();
             } else if (!confirmation) {} else {
                 alert('Empty');
             }

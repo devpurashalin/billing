@@ -89,7 +89,6 @@
                 <th>Amount Received</th>
                 <th>Discount, if any</th>
                 <th>Action</th>
-                <th>View</th>
             </tr>
             <?php
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -119,9 +118,9 @@
                     $TotalAmount = $row['amount'];
             ?>
                     <tr>
-                        <td><?php echo $invoiceNo; ?></td>
+                        <td><a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
                         <td><?php echo $partyName; ?></td>
-                        <td><?php echo $date; ?></td>
+                        <td><?php echo date("d-M-Y", strtotime($date)); ?></td>
                         <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
                         <form action="invoiceUpdate" method="post">
                             <td>
@@ -154,9 +153,6 @@
                                 <button type="submit" class="btn btn-primary">Update</button>
                             </td>
                         </form>
-                        <td>
-                            <a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>" class="btn btn-primary">View</a>
-                        </td>
                     </tr>
             <?php
                 }
