@@ -26,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($_POST['submit'] == 'Save') {
         $conn->execute_query("INSERT INTO `invoicetotal`
         (`invoiceNo`, `partyId`, `partyName`, `number`, `date`, `amount`, `amountWord`, `paymentStatus`, `paymentMode`, `discount`) VALUES 
-        ('$invoiceNo','$partyId', '$partyName', '$number','$date','$TotalAmount', '$amountWord', 'NIL','NIL','NIL')");
+        ('$invoiceNo','$partyId', '$partyName', '$number','$date','$TotalAmount', '$amountWord', 'Due','','NIL')");
         header("Location: invoiceCreate");
     } else if ($_POST['submit'] == 'Print') {
         header("Location: invoiceView?invoiceNo=$invoiceNo");

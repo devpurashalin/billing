@@ -108,7 +108,7 @@ ob_start();
             <td style="text-align: center;" colspan="5">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
         </tr>
         <tr>
-            <td style="text-align: center;" colspan="5">Email : deepakprinters.jpr@gmail.com</td>
+            <td  style='padding-bottom: 25x; text-align: center;' colspan="5">Email : deepakprinters.jpr@gmail.com</td>
         </tr>
         <tr>
             <td><label for="invoiceNo">Invoice No.</label></td>
@@ -154,7 +154,7 @@ ob_start();
                 echo "</tr>";
             }
         }
-        while ($count < 17) {
+        while ($count < 16) {
             $count++;
             echo "<tr>";
             echo "<td style='padding-top: 13px; padding-bottom: 14x;'></td>";
@@ -179,7 +179,7 @@ ob_start();
         <tr></tr>
         <tr>
             <td colspan="4"><b>Terms and Conditions:</b></td>
-            <td style="color: red;">For: <b>Deepak Printers</b></td>
+            <td class="text-end" style="color: red;">For: <b>Deepak Printers</b></td>
         </tr>
 
         <tr>
@@ -194,7 +194,7 @@ ob_start();
 
         <tr>
             <td colspan="4">3. E. & O.E.</td>
-            <td>Authorised Signature</td>
+            <td class="text-end">Authorised Signature</td>
         </tr>
     </table>
 </body>

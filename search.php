@@ -6,8 +6,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
     <script>
         function formSubmit() {
             if (document.getElementById('partyId').value == "" && document.getElementById('partyName').value == "" && document.getElementById('invoiceNo').value == "") {
@@ -95,7 +98,7 @@
                 if (isset($_POST['invoiceNo']) && $_POST['invoiceNo'] != "") {
                     $invoiceNo = $_POST['invoiceNo'];
                     $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
-                } else if (isset($_POST['partyId'])  && $_POST['partyId'] != "") {
+                } else if (isset($_POST['partyId']) && $_POST['partyId'] != "") {
                     $partyId = $_POST['partyId'];
                     $sql = "SELECT * FROM invoicetotal WHERE partyId = '$partyId'";
                 } else if (isset($_POST['partyName']) && $_POST['partyName'] != "") {
@@ -116,35 +119,56 @@
                     $partyName = $row['partyName'];
                     $date = $row['date'];
                     $TotalAmount = $row['amount'];
-            ?>
+                    ?>
                     <tr>
-                        <td><a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
+                        <td><a target="_blank"
+                                href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
                         <td><?php echo $partyName; ?></td>
                         <td><?php echo date("d-M-Y", strtotime($date)); ?></td>
                         <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
                         <form action="invoiceUpdate" method="post">
                             <td>
                                 <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
-                                <select class="form-control" onchange="amountUpdate(<?php echo $count; ?>)" name="paymentStatus" id="paymentStatus<?php echo $count; ?>">
-                                    <option value="Received" <?php if ($row['paymentStatus'] == "Received") echo "selected"; ?>>Received</option>
-                                    <option value="Gift" <?php if ($row['paymentStatus'] == "Gift") echo "selected"; ?>>Gift</option>
-                                    <option value="Partial Received" <?php if ($row['paymentStatus'] == "Partial Received") echo "selected"; ?>>Partial Received</option>
-                                    <option value="NIL" <?php if ($row['paymentStatus'] == "NIL") echo "selected"; ?>>Due</option>
+                                <select class="form-control" onchange="amountUpdate(<?php echo $count; ?>)" name="paymentStatus"
+                                    id="paymentStatus<?php echo $count; ?>">
+                                    <?php
+                                    $paymentStatus = $row['paymentStatus'];
+                                    $tempsql = "SELECT * FROM `paymentstatus`;";
+                                    $tempresult = $conn->query($tempsql);
+                                    if ($tempresult->num_rows > 0) {
+                                        while ($temprow = $tempresult->fetch_assoc()) {
+                                            $selected = "";
+                                            if ($paymentStatus == $temprow['value']) {
+                                                $selected = "selected";
+                                            }
+                                            echo "<option value='" . $temprow['value'] . "' $selected>" . $temprow['value'] . "</option>";
+                                        }
+                                    }
+                                    ?>
                                 </select>
                             </td>
                             <td>
                                 <select class="form-control" name="paymentMode" id="paymentMode">
-                                    <option value="">Select</option>
-                                    <option value="Cash" <?php if ($row['paymentMode'] == "Cash") echo "selected"; ?>>Cash</option>
-                                    <option value="SB Account" <?php if ($row['paymentMode'] == "SB Account") echo "selected"; ?>>SB Account</option>
-                                    <option value="Cheque" <?php if ($row['paymentMode'] == "Cheque") echo "selected"; ?>>Cheque</option>
-                                    <option value="Paytm" <?php if ($row['paymentMode'] == "Paytm") echo "selected"; ?>>Paytm</option>
-                                    <option value="Phonepe" <?php if ($row['paymentMode'] == "Phonepe") echo "selected"; ?>>Phonepe</option>
-                                    <option value="Current Account" <?php if ($row['paymentMode'] == "Current Account") echo "selected"; ?>>Current Account</option>
+                                    <option value="" selected>Select</option>
+                                    <?php
+                                    $paymentMode = $row['paymentMode'];
+                                    $tempsql = "SELECT * FROM `paymentmode`;";
+                                    $tempresult = $conn->query($tempsql);
+                                    if ($tempresult->num_rows > 0) {
+                                        while ($temprow = $tempresult->fetch_assoc()) {
+                                            $selected = "";
+                                            if ($paymentMode == $temprow['value']) {
+                                                $selected = "selected";
+                                            }
+                                            echo "<option value='" . $temprow['value'] . "' $selected>" . $temprow['value'] . "</option>";
+                                        }
+                                    }
+                                    ?>
                                 </select>
                             </td>
                             <td>
-                                <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
+                                <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived"
+                                    class="form-control" value="<?php echo $row['amountReceived']; ?>">
                             </td>
                             <td>
                                 <input type="text" name="discount" class="form-control" value="<?php echo $row['discount']; ?>">
@@ -154,7 +178,7 @@
                             </td>
                         </form>
                     </tr>
-            <?php
+                    <?php
                 }
             }
             ?>
@@ -165,9 +189,9 @@
             console.log(totalAmount);
             var paymentStatus = document.getElementById("paymentStatus" + element).value;
             console.log(paymentStatus);
-            if (paymentStatus == "Received") {
+            if (paymentStatus == "Full Received") {
                 document.getElementById("amountReceived" + element).value = totalAmount;
-            } else if (paymentStatus == "Gift") {
+            } else if (paymentStatus == "Gift" || paymentStatus == "Due") {
                 document.getElementById("amountReceived" + element).value = 0;
             } else if (paymentStatus == "NIL") {
                 document.getElementById("amountReceived" + element).value = 0;

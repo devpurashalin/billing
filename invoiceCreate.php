@@ -14,6 +14,42 @@
             width: 30%;
             z-index: 999;
         }
+
+        /*the container must be positioned relative:*/
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            /*position the autocomplete items to be the same width as the container:*/
+            top: 100%;
+            left: 0;
+            right: 0;
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+        /*when hovering an item:*/
+        .autocomplete-items div:hover {
+            background-color: #e9e9e9;
+        }
+
+        /*when navigating through the items using the arrow keys:*/
+        .autocomplete-active {
+            background-color: DodgerBlue !important;
+            color: #ffffff;
+        }
     </style>
 </head>
 
@@ -36,7 +72,8 @@
                 </tr>
                 <tr>
                     <td colspan="5">
-                        <div class="text-center">Deals in : Offset, Screen, Multi Colour Printing & Computer Design Works</div>
+                        <div class="text-center">Deals in : Offset, Screen, Multi Colour Printing & Computer Design
+                            Works</div>
                         <div class="text-center">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</div>
                         <div class="text-center">Email : deepakprinters.jpr@gmail.com</div>
                     </td>
@@ -56,24 +93,20 @@
                     <td class="text-end"><label for="partyName">Name of Party</label></td>
 
                     <td colspan="2">
-                        <input type="hidden" name="partyName" id="partyName">
-                        <input type="text" id="searchInput" autocomplete="off" onclick="displayOptions()" class="form-control" placeholder="Search...">
-                        <div id="Options" style="display: none;">
-                            <div id="optionsContainer" class="form-control bg-light">
-                                <div onclick="setValue(this)" class="option mb-1">Select</div>
-                                <?php
-                                $query = "SELECT * FROM `party` WHERE status='ACTIVE';";
-                                $result = $conn->execute_query($query);
-                                $data = [];
-                                while ($row = $result->fetch_assoc()) {
-                                    $data[] = $row;
-                                    echo '<div onclick="setValue(this)" class="option mb-1">' . $row['name'] . '</div>';
-                                }
-                                ?>
-                            </div>
+                        <div class="autocomplete" style="width:300px;">
+                            <input required class="form-control" oninput="fillData();" id="partyName" autocomplete="off" type="text" name="partyName">
                         </div>
+                        <?php
+                        $query = "SELECT * FROM `party` WHERE status='ACTIVE';";
+                        $result = $conn->execute_query($query);
+                        $data = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $data[] = $row;
+                        }
+                        ?>
                         <script>
                             let partyData = <?php echo json_encode($data); ?>;
+                            let partyName = partyData.map(item => item.name);
 
                             function findIndexById(id) {
                                 return partyData.findIndex(item => item.name === id);
@@ -83,13 +116,13 @@
                     </td>
                     <input type="hidden" name="partyId" id="partyId">
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
-                    <td><input class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
-                    <td colspan="2"><input class="form-control" type="text" name="address" id="address"></td>
+                    <td colspan="2"><input required class="form-control" type="text" name="address" id="address"></td>
                     <td class="text-end"><label for="number">Mobile No.</label></td>
-                    <td><input class="form-control" type="text" name="number" id="number"></td>
+                    <td><input required class="form-control" type="text" name="number" id="number"></td>
                 </tr>
                 <tr class="text-center">
                     <td class="fw-bold bg-light">S. No.</td>
@@ -100,7 +133,18 @@
                 </tr>
                 <tr>
                     <td><input type="text" class="form-control" id="sno1" name="sno1" value="1" required></td>
-                    <td><input type="text" class="form-control" id="description1" name="description1" required></td>
+                    <td>
+                        <select required class="form-control" name="description1" id="description1">
+                            <option value="" selected disabled>Select</option>
+                            <?php
+                            $tempsql = "SELECT * FROM `invoiceitem`";
+                            $tempresult = $conn->execute_query($tempsql);
+                            while ($temprow = $tempresult->fetch_assoc()) {
+                                echo '<option value="' . $temprow['value'] . '">' . $temprow['value'] . '</option>';
+                            }
+                            ?>
+                        </select>
+                    </td>
                     <td><input type="text" oninput="updateAmount(1)" class="form-control" id="qty1" name="qty1" required></td>
                     <td><input type="text" oninput="updateAmount(1)" class="form-control" id="rate1" name="rate1" required></td>
                     <td><input type="text" class="form-control" id="amount_rs1" name="amount_rs1" readonly></td>
@@ -147,15 +191,19 @@
     </div>
     <script>
         function fillData() {
-            let name = document.getElementById("partyName").value;
-            let index = findIndexById(name);
+            let name = document.getElementById("partyName");
+            name.value = name.value.toUpperCase();
+            let index = findIndexById(name.value);
             if (index >= 0) {
                 document.getElementById("GST_PAN").value = partyData[index].GST_PAN;
                 document.getElementById("address").value = partyData[index].address;
                 document.getElementById("number").value = partyData[index].number;
                 document.getElementById("partyId").value = partyData[index].ID;
             } else {
-                alert("Party Not Registered")
+                document.getElementById("GST_PAN").value = "";
+                document.getElementById("address").value = "";
+                document.getElementById("number").value = "";
+                document.getElementById("partyId").value = "";
             }
         }
 
@@ -177,7 +225,11 @@
                 let cell1 = row.insertCell(0);
                 cell1.innerHTML = '<input type="text" value="' + count + '" class="form-control" id="sno' + count + '" name="sno' + count + '" required>';
                 let cell2 = row.insertCell(1);
-                cell2.innerHTML = '<input type="text" class="form-control" id="description' + count + '" name="description' + count + '" required>';
+                cell2.innerHTML = '<select required class="form-control" name="description' + count + '" id="description' + count + '"><option value="" selected disabled>Select</option><?php $tempsql = "SELECT * FROM `invoiceitem`";
+                                                                                                                                                                                            $tempresult = $conn->execute_query($tempsql);
+                                                                                                                                                                                            while ($temprow = $tempresult->fetch_assoc()) {
+                                                                                                                                                                                                echo '<option value="' . $temprow['value'] . '">' . $temprow['value'] . '</option>';
+                                                                                                                                                                                            } ?></select>';
                 let cell3 = row.insertCell(2);
                 cell3.innerHTML = '<input type="text" oninput="updateAmount(' + count + ')" class="form-control" id="qty' + count + '" name="qty' + count + '" required>';
                 let cell4 = row.insertCell(3);
@@ -338,27 +390,79 @@
             }
         }
 
-        // Filter options based on search input
-        document.getElementById("searchInput").addEventListener("input", function() {
-            var searchValue = this.value.toLowerCase();
-            var options = document.getElementsByClassName("option");
-            for (var i = 0; i < options.length; i++) {
-                var optionText = options[i].textContent.toLowerCase();
-                if (optionText.indexOf(searchValue) > -1) {
-                    options[i].style.display = "";
-                } else {
-                    options[i].style.display = "none";
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) {
+                    return false;
+                }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    let index = arr[i].indexOf(val.toUpperCase());
+                    if (index > -1) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = arr[i].substr(0, index);
+                        b.innerHTML += "<strong>" + arr[i].substr(index, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(index + val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                        b.addEventListener("click", function(e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+
+            function removeActive(x) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
                 }
             }
-        });
 
-        function setValue(option) {
-            var value = option.textContent;
-            document.getElementById("partyName").value = value;
-            document.getElementById("Options").style.display = "none";
-            document.getElementById("searchInput").value = value;
-            fillData();
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function(e) {
+                closeAllLists(e.target);
+                fillData();
+            });
         }
+        autocomplete(document.getElementById("partyName"), partyName);
     </script>
 
 </body>
