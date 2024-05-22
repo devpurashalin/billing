@@ -22,43 +22,101 @@
 <body>
     <?php include "navbar.php"; ?>
     <div class="container my-5">
-        <table class="table table-bordered">
-            <tr>
-                <th>Party ID</th>
-                <th>Party Name</th>
-                <th>Mobile No</th>
-                <th>Due Amount</th>
-            </tr>
-            <?php
-            $sql = "SELECT * FROM party WHERE status != 'DELETED'";
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $partyId = $row['ID'];
-                    $partyName = $row['name'];
-                    $number = $row['number'];
-                    $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived FROM invoicetotal WHERE partyId = '$partyId' AND (paymentStatus = 'NIL' OR paymentStatus = 'Partial Received')";
-                    $result1 = $conn->query($sql1);
-                    $row1 = $result1->fetch_assoc();
-                    $amountReceived = $row1['amountReceived'];
-                    $total = $row1['total'];
-                    $dueAmount = $total - $amountReceived;
-                    if ($dueAmount == 0) {
-                        continue;
+        <div class="container mb-3 row">
+            <div class="col-md col-0"><button class="btn btn-dark" onclick="CSVConvert()">Download as CSV</button></div>
+            <div class="col-md-4">
+                <input class="form-control" onkeyup="search(this);" type="text" id="searchInput" placeholder="Search">
+            </div>
+        </div>
+        <table id="DueAmount" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Party ID</th>
+                    <th>Party Name</th>
+                    <th>Mobile No</th>
+                    <th>Due Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $sql = "SELECT * FROM party WHERE status != 'DELETED'";
+                $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $partyId = $row['ID'];
+                        $partyName = $row['name'];
+                        $number = $row['number'];
+                        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived FROM invoicetotal WHERE partyId = '$partyId' AND (paymentStatus = 'Due' OR paymentStatus = 'Partial Received')";
+                        $result1 = $conn->query($sql1);
+                        $row1 = $result1->fetch_assoc();
+                        $amountReceived = $row1['amountReceived'];
+                        $total = $row1['total'];
+                        $dueAmount = $total - $amountReceived;
+                        if ($dueAmount == 0) {
+                            continue;
+                        }
+                ?>
+                        <tr>
+                            <td><?php echo $partyId; ?></td>
+                            <td><?php echo $partyName; ?></td>
+                            <td><?php echo $number; ?></td>
+                            <td><?php echo $dueAmount; ?></td>
+                        </tr>
+                <?php
                     }
-            ?>
-                    <tr>
-                        <td><?php echo $partyId; ?></td>
-                        <td><?php echo $partyName; ?></td>
-                        <td><?php echo $number; ?></td>
-                        <td><?php echo $dueAmount; ?></td>
-                    </tr>
-            <?php
                 }
-            }
-            ?>
+                ?>
+            </tbody>
         </table>
     </div>
+    <script>
+        function search(input) {
+            let inputValue = input.value.toLowerCase();
+            let rows = document.querySelectorAll("#DueAmount tbody tr");
+
+            rows.forEach(row => {
+                let rowData = row.textContent.toLowerCase();
+                if (rowData.includes(inputValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+        function CSVConvert() {
+            var table = document.getElementById('DueAmount');
+            var rows = table.rows;
+            var csvContent = '';
+
+            for (var i = 0; i < rows.length; i++) {
+                if (rows[i].style.display !== 'none') {
+                    var cells = rows[i].cells;
+                    for (var j = 0; j < cells.length; j++) {
+                        csvContent += cells[j].innerText + (j < cells.length - 1 ? ',' : '');
+                    }
+                    csvContent += '\n';
+                }
+            }
+
+            var blob = new Blob([csvContent], {
+                type: 'text/csv;charset=utf-8;'
+            });
+            if (navigator.msSaveBlob) {
+                navigator.msSaveBlob(blob, 'DueAmount.csv');
+            } else {
+                var link = document.createElement('a');
+                if (link.download !== undefined) {
+                    var url = URL.createObjectURL(blob);
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', 'DueAmount.csv');
+                    link.style.visibility = 'hidden';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            }
+        }
+    </script>
 </body>
 
 </html>

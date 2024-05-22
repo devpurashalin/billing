@@ -88,7 +88,7 @@ if ($result->num_rows > 0) {
             <tr>
                 <td class="py-0">PAN No.: ABCED1234E</td>
                 <th class="text-center py-0" colspan="3">
-                    <img src="./ganesh.jpeg" width="50px" alt="">
+                    <img src="./ganesh.jpeg" width="35px" alt="">
                     <br>
                     <u>Cash/Credit Memo</u>
                 </th>
@@ -137,10 +137,10 @@ if ($result->num_rows > 0) {
             if ($result2->num_rows > 0) {
                 while ($row2 = $result2->fetch_assoc()) {
                     echo "<tr class='forBorder'>";
-                    echo "<td>" . $row2['SNo'] . "</td>";
+                    echo "<td class='text-center'>" . $row2['SNo'] . "</td>";
                     echo "<td>" . $row2['description'] . "</td>";
-                    echo "<td>" . $row2['qty'] . "</td>";
-                    echo "<td>" . $row2['rate'] . "</td>";
+                    echo "<td class='text-center'>" . $row2['qty'] . "</td>";
+                    echo "<td class='text-center'>" . $row2['rate'] . "</td>";
                     echo "<td>" . $row2['amount'] . "</td>";
                     echo "</tr>";
                 }
@@ -162,9 +162,10 @@ if ($result->num_rows > 0) {
             <tr>
                 <td colspan="5" id="totalAmountWords">Rs. (in words): <?php echo $amountWord; ?></td>
             </tr>
+            <tr><td></td></tr>
             <tr>
                 <td class="py-0" colspan="4"><b>Terms and Conditions:</b></td>
-                <td class="py-0" style="color: red;">For: <b>Deepak Printers</b></td>
+                <td class="py-0 text-danger">For: <b>Deepak Printers</b></td>
             </tr>
 
             <tr>

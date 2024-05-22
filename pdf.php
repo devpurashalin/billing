@@ -4,7 +4,7 @@ require_once './vendor/autoload.php'; // Adjust the path as needed
 require_once './connection.php'; // Adjust the path as needed
 // Create mPDF object
 $mpdf = new \Mpdf\Mpdf();
-
+$mpdf->SetMargins(0, 0, 5);
 if (isset($_GET['invoiceNo'])) {
     $invoiceNo = $_GET['invoiceNo'];
 } else {
@@ -80,51 +80,60 @@ ob_start();
         .text-end {
             text-align: right;
         }
+        table, td, th {
+            border: 0px solid black;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .vertical-align {
+            /* vertical-align: top; */
+        }
     </style>
 </head>
 
 <body>
     <table>
         <tr>
-            <td>PAN No.: ABCED1234E</td>
-            <th colspan="3" style="padding: 10 80;">
-                <img src="./ganesh.jpeg" width="50px" alt="">
+            <td colspan="2" style="padding-top: 0;" class="vertical-align">PAN No.: ABCED1234E</td>
+            <th colspan="3" style="padding: 10 140 10 80;">
+                <img src="./ganesh.jpeg" width="35px">
                 <br>
                 <u>Cash/Credit Memo</u>
             </th>
-            <td class="text-end">Mob: 9887111141
+            <td class="text-end vertical-align">Mob: 9887111141
                 <br> 9414060621
             </td>
         </tr>
         <tr>
-            <th colspan="5">
-                <h1 style="color: red;">DEEPAK PRINTERS</h1>
+            <th colspan="6">
+                <h1 style="color: #dc3545;">DEEPAK PRINTERS</h1>
             </th>
         </tr>
         <tr>
-            <th colspan="5">Deals in : Offset, Screen, Multi Colour Printing & Computer Design Works</th>
+            <th colspan="6">Deals in : Offset, Screen, Multi Colour Printing & Computer Design Works</th>
         </tr>
         <tr>
-            <td style="text-align: center;" colspan="5">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
+            <td class="text-center" colspan="6">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
         </tr>
         <tr>
-            <td  style='padding-bottom: 25x; text-align: center;' colspan="5">Email : deepakprinters.jpr@gmail.com</td>
+            <td style='padding-bottom: 25x;' class="text-center" colspan="6">Email : deepakprinters.jpr@gmail.com</td>
         </tr>
         <tr>
             <td><label for="invoiceNo">Invoice No.</label></td>
-            <td colspan="2"><?php echo $invoiceNo; ?></td>
+            <td colspan="3"><?php echo $invoiceNo; ?></td>
             <td><label for="date">Date</label></td>
             <td><?php echo $date; ?></td>
         </tr>
         <tr>
             <td><label for="partyName">Name of Party</label></td>
-            <td colspan="2"><?php echo $partyName; ?></td>
+            <td colspan="3"><?php echo $partyName; ?></td>
             <td><label for="GST_PAN">GST/PAN</label></td>
             <td><?php echo $GST_PAN; ?></td>
         </tr>
         <tr>
             <td><label for="address">Address</label></td>
-            <td colspan="2"><?php echo $address; ?></td>
+            <td colspan="3"><?php echo $address; ?></td>
             <td><label for="number">Mobile No.</label></td>
             <td><?php echo $number; ?></td>
         </tr>
@@ -146,15 +155,15 @@ ob_start();
             while ($row2 = $result2->fetch_assoc()) {
                 $count++;
                 echo "<tr>";
-                echo "<td>" . $row2['SNo'] . "</td>";
+                echo "<td class='text-center'>" . $row2['SNo'] . "</td>";
                 echo "<td>" . $row2['description'] . "</td>";
-                echo "<td>" . $row2['qty'] . "</td>";
-                echo "<td>" . $row2['rate'] . "</td>";
-                echo "<td>" . $row2['amount'] . "</td>";
+                echo "<td class='text-center'>" . $row2['qty'] . "</td>";
+                echo "<td class='text-center'>" . $row2['rate'] . "</td>";
+                echo "<td class='text-end' style='padding-right: 20px'>" . $row2['amount'] . "</td>";
                 echo "</tr>";
             }
         }
-        while ($count < 16) {
+        while ($count < 15) {
             $count++;
             echo "<tr>";
             echo "<td style='padding-top: 13px; padding-bottom: 14x;'></td>";
@@ -167,19 +176,19 @@ ob_start();
         ?>
 
         <tr id="lastRow">
-            <td colspan="4" style="text-align: right;">Total Amount</td>
+            <td colspan="4" class="text-end">Total Amount</td>
             <td id="totalAmount"><?php echo $TotalAmount; ?></td>
         </tr>
     </table>
     <br>
     <table id="footer">
         <tr>
-            <td colspan="5" id="totalAmountWords">Rs. (in words): <?php echo $amountWord; ?></td>
+            <td style="padding-bottom: 25px;" colspan="5" id="totalAmountWords">Rs. (in words): <?php echo $amountWord; ?></td>
         </tr>
         <tr></tr>
         <tr>
             <td colspan="4"><b>Terms and Conditions:</b></td>
-            <td class="text-end" style="color: red;">For: <b>Deepak Printers</b></td>
+            <td class="text-end" style="color: #dc3545;">For: <b>Deepak Printers</b></td>
         </tr>
 
         <tr>
@@ -188,13 +197,16 @@ ob_start();
         </tr>
 
         <tr>
-            <td colspan="4">2. Goods Sold will not be taken back.</td>
+            <td colspan="4">2. Goods once sold will not be taken back.</td>
             <td></td>
         </tr>
 
         <tr>
             <td colspan="4">3. E. & O.E.</td>
             <td class="text-end">Authorised Signature</td>
+        </tr>
+        <tr>
+            <td colspan="5" class="text-center">This Invoice is computer generated, no signature required</td>
         </tr>
     </table>
 </body>

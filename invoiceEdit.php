@@ -1,26 +1,30 @@
 <?php
 include 'db.php';
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $invoiceNo = $_POST['invoiceNo'];
-} else {
-    exit;
-}
-$sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
-$result = $conn->query($sql);
-$row = $result->fetch_assoc();
-$invoiceNo = $row['invoiceNo'];
-$partyId = $row['partyId'];
-$partyName = $row['partyName'];
-$number = $row['number'];
-$date = $row['date'];
-$amountWord = $row['amountWord'];
-$TotalAmount = $row['amount'];
-$sql1 = "SELECT * FROM party WHERE ID = '$partyId'";
-$result1 = $conn->query($sql1);
-$row1 = $result1->fetch_assoc();
-$address = $row1['address'];
-$GST_PAN = $row1['GST_PAN'];
+    $sql = "SELECT * FROM `invoicetotal` WHERE invoiceNo='$invoiceNo'";
+    $result = $conn->execute_query($sql);
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $invoiceNo = $row['invoiceNo'];
+        $date = $row['date'];
+        $partyId = $row['partyId'];
 
+        $query = "SELECT * FROM `party` WHERE ID='$partyId'";
+        $result = $conn->execute_query($query);
+        $party = $result->fetch_assoc();
+        $partyName = $party['name'];
+        $GST_PAN = $party['GST_PAN'];
+        $address = $party['address'];
+        $number = $party['number'];
+    } else {
+        echo "<script>alert('Invalid Request');</script>";
+        echo "<script>window.location = 'invoicesAll';</script>";
+    }
+} else {
+    echo "<script>alert('Invalid Request');</script>";
+    echo "<script>window.location = 'invoicesAll';</script>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,12 +36,43 @@ $GST_PAN = $row1['GST_PAN'];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <style>
-        #Options {
+        /*the container must be positioned relative:*/
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+        }
+
+        .autocomplete-items {
             position: absolute;
-            width: 30%;
-            z-index: 999;
+            border: 1px solid #d4d4d4;
+            border-bottom: none;
+            border-top: none;
+            z-index: 99;
+            /*position the autocomplete items to be the same width as the container:*/
+            top: 100%;
+            left: 0;
+            right: 0;
+        }
+
+        .autocomplete-items div {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            border-bottom: 1px solid #d4d4d4;
+        }
+
+        /*when hovering an item:*/
+        .autocomplete-items div:hover {
+            background-color: #e9e9e9;
+        }
+
+        /*when navigating through the items using the arrow keys:*/
+        .autocomplete-active {
+            background-color: DodgerBlue !important;
+            color: #ffffff;
         }
     </style>
+
 </head>
 
 <body>
@@ -59,40 +94,36 @@ $GST_PAN = $row1['GST_PAN'];
                 </tr>
                 <tr>
                     <td colspan="5">
-                        <div class="text-center">Deals in : Offset, Screen, Multi Colour Printing & Computer Design Works</div>
+                        <div class="text-center">Deals in : Offset, Screen, Multi Colour Printing & Computer Design
+                            Works</div>
                         <div class="text-center">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</div>
                         <div class="text-center">Email : deepakprinters.jpr@gmail.com</div>
                     </td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <td colspan="2"><input readonly class="form-control" value="<?php echo $invoiceNo; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td colspan="2"><input class="form-control" value="<?php echo $invoiceNo ?>" type="text" name="invoiceNo" id="invoiceNo" readonly></td>
                     <td class="text-end"><label for="date">Date</label></td>
                     <td><input class="form-control" type="date" name="date" id="date" value="<?php echo $date; ?>"></td>
                 </tr>
                 <tr>
 
                     <td class="text-end"><label for="partyName">Name of Party</label></td>
-
                     <td colspan="2">
-                        <input type="hidden" name="partyName" id="partyName" value="<?php echo $partyName; ?>">
-                        <input type="text" id="searchInput" autocomplete="off" onclick="displayOptions()" class="form-control" placeholder="Search..." value="<?php echo $partyName; ?>">
-                        <div id="Options" style="display: none;">
-                            <div id="optionsContainer" class="form-control bg-light">
-                                <div onclick="setValue(this)" class="option mb-1">Select</div>
-                                <?php
-                                $query = "SELECT * FROM `party` WHERE status='ACTIVE';";
-                                $result = $conn->execute_query($query);
-                                $data = [];
-                                while ($row = $result->fetch_assoc()) {
-                                    $data[] = $row;
-                                    echo '<div onclick="setValue(this)" class="option mb-1">' . $row['name'] . '</div>';
-                                }
-                                ?>
-                            </div>
+                        <div class="autocomplete" style="width:300px;">
+                            <input required class="form-control" oninput="fillData();" value="<?php echo $partyName; ?>" id="partyName" autocomplete="off" type="text" name="partyName">
                         </div>
+                        <?php
+                        $query = "SELECT * FROM `party` WHERE status='ACTIVE';";
+                        $result = $conn->execute_query($query);
+                        $data = [];
+                        while ($row = $result->fetch_assoc()) {
+                            $data[] = $row;
+                        }
+                        ?>
                         <script>
                             let partyData = <?php echo json_encode($data); ?>;
+                            let partyName = partyData.map(item => item.name);
 
                             function findIndexById(id) {
                                 return partyData.findIndex(item => item.name === id);
@@ -100,15 +131,15 @@ $GST_PAN = $row1['GST_PAN'];
                         </script>
                         </select>
                     </td>
-                    <input type="hidden" name="partyId" id="partyId" value="<?php echo $partyId; ?>">
+                    <input type="hidden" name="partyId" id="partyId">
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
-                    <td><input class="form-control" type="text" name="GST_PAN" id="GST_PAN" value="<?php echo $GST_PAN; ?>"></td>
+                    <td><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
-                    <td colspan="2"><input class="form-control" type="text" name="address" id="address" value="<?php echo $address; ?>"></td>
+                    <td colspan="2"><input required class="form-control" type="text" name="address" id="address"></td>
                     <td class="text-end"><label for="number">Mobile No.</label></td>
-                    <td><input class="form-control" type="text" name="number" id="number" value="<?php echo $number; ?>"></td>
+                    <td><input required class="form-control" type="text" name="number" id="number"></td>
                 </tr>
                 <tr class="text-center">
                     <td class="fw-bold bg-light">S. No.</td>
@@ -117,30 +148,39 @@ $GST_PAN = $row1['GST_PAN'];
                     <td class="fw-bold bg-light">Rate</td>
                     <td class="fw-bold bg-light">Amount Rs.</td>
                 </tr>
-                <?php 
-                $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
-                $result2 = $conn->query($sql2);
-                if ($result2->num_rows > 0) {
-                    $count = 0;
-                    while ($row2 = $result2->fetch_assoc()) {
-                        $count++;
-                        echo "<tr>";
-                        echo "<td><input type='text' class='form-control' id='sno".$row2['SNo']."' name='sno".$row2['SNo']."' value='".$row2['SNo']."' required></td>";
-                        echo "<td><input type='text' class='form-control' id='description".$row2['SNo']."' name='description".$row2['SNo']."' value='".$row2['description']."' required></td>";
-                        echo "<td><input type='text' oninput='updateAmount(".$row2['SNo'].")' class='form-control' id='qty".$row2['SNo']."' name='qty".$row2['SNo']."' value='".$row2['qty']."' required></td>";
-                        echo "<td><input type='text' oninput='updateAmount(".$row2['SNo'].")' class='form-control' id='rate".$row2['SNo']."' name='rate".$row2['SNo']."' value='".$row2['rate']."' required></td>";
-                        echo "<td><input type='text' class='form-control' id='amount_rs".$row2['SNo']."' name='amount_rs".$row2['SNo']."' value='".$row2['amount']."' readonly></td>";
-                        echo "</tr>";
+                <?php
+                $query = "SELECT * FROM `invoice` WHERE invoiceNo='$invoiceNo'";
+                $result = $conn->execute_query($query);
+                $count = 1;
+                while ($row = $result->fetch_assoc()) {
+                    echo '<tr>';
+                    echo '<td><input type="text" class="form-control" id="sno' . $count . '" name="sno' . $count . '" value="' . $count . '" required></td>';
+                    echo '<td><select required class="form-control" name="description' . $count . '" id="description' . $count . '">';
+                    echo '<option value="" selected disabled>Select</option>';
+                    $tempsql = "SELECT * FROM `invoiceitem`";
+                    $tempresult = $conn->execute_query($tempsql);
+                    while ($temprow = $tempresult->fetch_assoc()) {
+                        echo '<option value="' . $temprow['value'] . '"';
+                        if ($temprow['value'] == $row['description']) {
+                            echo ' selected';
+                        }
+                        echo '>' . $temprow['value'] . '</option>';
                     }
+                    echo '</select></td>';
+                    echo '<td><input type="text" oninput="updateAmount(' . $count . ')" class="form-control" id="qty' . $count . '" name="qty' . $count . '" value="' . $row['qty'] . '" required></td>';
+                    echo '<td><input type="text" oninput="updateAmount(' . $count . ')" class="form-control" id="rate' . $count . '" name="rate' . $count . '" value="' . $row['rate'] . '" required></td>';
+                    echo '<td><input type="text" class="form-control" id="amount_rs' . $count . '" name="amount_rs' . $count . '" value="' . $row['amount'] . '" readonly></td>';
+                    echo '</tr>';
+                    $count++;
                 }
                 ?>
                 <tr>
                     <td colspan="4" class="text-end">Total Amount</td>
-                    <td><input type="text" class="form-control" id="total_amt" name="total_amt" value="<?php echo $TotalAmount; ?>" readonly></td>
+                    <td><input type="text" class="form-control" id="total_amt" name="total_amt" readonly></td>
                 </tr>
                 <tr>
                     <td>Rs. (in words)</td>
-                    <td colspan="4"><input type="text" class="form-control" id="total_amt_words" name="total_amt_words" value="<?php echo $amountWord; ?>" readonly></td>
+                    <td colspan="4"><input type="text" class="form-control" id="total_amt_words" name="total_amt_words" readonly></td>
                 </tr>
                 <tr>
                     <td colspan="5">
@@ -176,15 +216,19 @@ $GST_PAN = $row1['GST_PAN'];
     </div>
     <script>
         function fillData() {
-            let name = document.getElementById("partyName").value;
-            let index = findIndexById(name);
+            let name = document.getElementById("partyName");
+            name.value = name.value.toUpperCase();
+            let index = findIndexById(name.value);
             if (index >= 0) {
                 document.getElementById("GST_PAN").value = partyData[index].GST_PAN;
                 document.getElementById("address").value = partyData[index].address;
                 document.getElementById("number").value = partyData[index].number;
                 document.getElementById("partyId").value = partyData[index].ID;
             } else {
-                alert("Party Not Registered")
+                document.getElementById("GST_PAN").value = "";
+                document.getElementById("address").value = "";
+                document.getElementById("number").value = "";
+                document.getElementById("partyId").value = "";
             }
         }
 
@@ -195,7 +239,7 @@ $GST_PAN = $row1['GST_PAN'];
             document.getElementById("amount_rs" + number).value = amount;
             updateTotalAmount();
         }
-        let count = <?php echo $count; ?>;
+        let count = <?php echo $count - 1; ?>;
 
         function addRow() {
             if (isCurrentRowFilled()) {
@@ -206,7 +250,11 @@ $GST_PAN = $row1['GST_PAN'];
                 let cell1 = row.insertCell(0);
                 cell1.innerHTML = '<input type="text" value="' + count + '" class="form-control" id="sno' + count + '" name="sno' + count + '" required>';
                 let cell2 = row.insertCell(1);
-                cell2.innerHTML = '<input type="text" class="form-control" id="description' + count + '" name="description' + count + '" required>';
+                cell2.innerHTML = '<select required class="form-control" name="description' + count + '" id="description' + count + '"><option value="" selected disabled>Select</option><?php $tempsql = "SELECT * FROM `invoiceitem`";
+                                                                                                                                                                                            $tempresult = $conn->execute_query($tempsql);
+                                                                                                                                                                                            while ($temprow = $tempresult->fetch_assoc()) {
+                                                                                                                                                                                                echo '<option value="' . $temprow['value'] . '">' . $temprow['value'] . '</option>';
+                                                                                                                                                                                            } ?></select>';
                 let cell3 = row.insertCell(2);
                 cell3.innerHTML = '<input type="text" oninput="updateAmount(' + count + ')" class="form-control" id="qty' + count + '" name="qty' + count + '" required>';
                 let cell4 = row.insertCell(3);
@@ -234,7 +282,6 @@ $GST_PAN = $row1['GST_PAN'];
             if (confirmation && count != 0) {
                 table.deleteRow(row - 8);
                 count--;
-                updateTotalAmount();
             } else if (!confirmation) {} else {
                 alert('Empty');
             }
@@ -368,29 +415,85 @@ $GST_PAN = $row1['GST_PAN'];
             }
         }
 
-        // Filter options based on search input
-        document.getElementById("searchInput").addEventListener("input", function() {
-            var searchValue = this.value.toLowerCase();
-            var options = document.getElementsByClassName("option");
-            for (var i = 0; i < options.length; i++) {
-                var optionText = options[i].textContent.toLowerCase();
-                if (optionText.indexOf(searchValue) > -1) {
-                    options[i].style.display = "";
-                } else {
-                    options[i].style.display = "none";
+        function autocomplete(inp, arr) {
+            var currentFocus;
+            inp.addEventListener("input", function(e) {
+                var a, b, i, val = this.value;
+                closeAllLists();
+                if (!val) {
+                    return false;
+                }
+                currentFocus = -1;
+                a = document.createElement("DIV");
+                a.setAttribute("id", this.id + "autocomplete-list");
+                a.setAttribute("class", "autocomplete-items");
+                this.parentNode.appendChild(a);
+                for (i = 0; i < arr.length; i++) {
+                    let index = arr[i].indexOf(val.toUpperCase());
+                    if (index > -1) {
+                        b = document.createElement("DIV");
+                        b.innerHTML = arr[i].substr(0, index);
+                        b.innerHTML += "<strong>" + arr[i].substr(index, val.length) + "</strong>";
+                        b.innerHTML += arr[i].substr(index + val.length);
+                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                        b.addEventListener("click", function(e) {
+                            inp.value = this.getElementsByTagName("input")[0].value;
+                            closeAllLists();
+                        });
+                        a.appendChild(b);
+                    }
+                }
+            });
+            inp.addEventListener("keydown", function(e) {
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                if (e.keyCode == 40) {
+                    currentFocus++;
+                    addActive(x);
+                } else if (e.keyCode == 38) { //up
+                    currentFocus--;
+                    addActive(x);
+                } else if (e.keyCode == 13) {
+                    e.preventDefault();
+                    if (currentFocus > -1) {
+                        if (x) x[currentFocus].click();
+                    }
+                }
+            });
+
+            function addActive(x) {
+                if (!x) return false;
+                removeActive(x);
+                if (currentFocus >= x.length) currentFocus = 0;
+                x[currentFocus].classList.add("autocomplete-active");
+            }
+
+            function removeActive(x) {
+                for (var i = 0; i < x.length; i++) {
+                    x[i].classList.remove("autocomplete-active");
                 }
             }
-        });
 
-        function setValue(option) {
-            var value = option.textContent;
-            document.getElementById("partyName").value = value;
-            document.getElementById("Options").style.display = "none";
-            document.getElementById("searchInput").value = value;
-            fillData();
+            function closeAllLists(elmnt) {
+                var x = document.getElementsByClassName("autocomplete-items");
+                for (var i = 0; i < x.length; i++) {
+                    if (elmnt != x[i] && elmnt != inp) {
+                        x[i].parentNode.removeChild(x[i]);
+                    }
+                }
+            }
+            document.addEventListener("click", function(e) {
+                closeAllLists(e.target);
+                fillData();
+            });
         }
+        autocomplete(document.getElementById("partyName"), partyName);
     </script>
-
+    <script>
+        fillData();
+        // calculateAmount();
+        updateTotalAmount();
+    </script>
 </body>
 
 </html>

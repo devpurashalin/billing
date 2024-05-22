@@ -15,8 +15,8 @@
 
 <body>
     <?php include "navbar.php"; ?>
-    <div class="container">
-        <h1 class="text-center">Welcome to DEEPAL PRINTERS</h1>
+    <div class="container my-5">
+        <h1 class="text-center text-danger">Welcome to DEEPAL PRINTERS</h1>
     </div>
 </body>
 

@@ -17,7 +17,7 @@
                     <a class="nav-link" href="invoicesAll">Invoice Report</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="search">Payment</a>
+                    <a class="nav-link" href="payment">Payment</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="dueAmount">Due Amount</a>

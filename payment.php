@@ -5,12 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
+    <title>Payment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
         function formSubmit() {
             if (document.getElementById('partyId').value == "" && document.getElementById('partyName').value == "" && document.getElementById('invoiceNo').value == "") {
@@ -21,12 +18,22 @@
             }
         }
     </script>
+    <style>
+        input, select {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+        td, th {
+            padding-left: 3px !important;
+            padding-right: 3px !important;
+        }
+    </style>
 </head>
 
 <body>
     <?php include "navbar.php"; ?>
     <div class="container my-5">
-        <form action="search" method="POST">
+        <form action="payment" method="POST">
             <div class="row">
                 <div class="col-md-3">
                     Party ID
@@ -90,7 +97,9 @@
                 <th>Payment Status</th>
                 <th>Payment Mode</th>
                 <th>Amount Received</th>
+                <th>Date of Payment</th>
                 <th>Discount, if any</th>
+                <th>Remark</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -119,18 +128,18 @@
                     $partyName = $row['partyName'];
                     $date = $row['date'];
                     $TotalAmount = $row['amount'];
-                    ?>
+                    $dateOfPayment = $row['dateOfPayment'];
+                    $remark = $row['remark'];
+            ?>
                     <tr>
-                        <td><a target="_blank"
-                                href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
+                        <td><a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
                         <td><?php echo $partyName; ?></td>
-                        <td><?php echo date("d-M-Y", strtotime($date)); ?></td>
+                        <td><?php echo date("d-m-Y", strtotime($date)); ?></td>
                         <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
                         <form action="invoiceUpdate" method="post">
                             <td>
                                 <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
-                                <select class="form-control" onchange="amountUpdate(<?php echo $count; ?>)" name="paymentStatus"
-                                    id="paymentStatus<?php echo $count; ?>">
+                                <select class="form-control" onchange="amountUpdate(<?php echo $count; ?>)" name="paymentStatus" id="paymentStatus<?php echo $count; ?>">
                                     <?php
                                     $paymentStatus = $row['paymentStatus'];
                                     $tempsql = "SELECT * FROM `paymentstatus`;";
@@ -148,7 +157,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-control" name="paymentMode" id="paymentMode">
+                                <select class="form-control" name="paymentMode" id="paymentMode<?php echo $count; ?>">
                                     <option value="" selected>Select</option>
                                     <?php
                                     $paymentMode = $row['paymentMode'];
@@ -167,18 +176,19 @@
                                 </select>
                             </td>
                             <td>
-                                <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived"
-                                    class="form-control" value="<?php echo $row['amountReceived']; ?>">
+                                <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
                             </td>
+                            <td><input type="date" class="form-control" name="dateOfPayment" id="dateOfPayment<?php echo $count; ?>" value="<?php echo $dateOfPayment; ?>"></td>
                             <td>
-                                <input type="text" name="discount" class="form-control" value="<?php echo $row['discount']; ?>">
+                                <input type="text" name="discount" id="discount<?php echo $count; ?>" class="form-control" value="<?php echo $row['discount']; ?>">
                             </td>
+                            <td><input type="text" class="form-control" name="remark" id="reamrk<?php echo $count; ?>" value="<?php echo $remark; ?>"></td>
                             <td>
-                                <button type="submit" class="btn btn-primary">Update</button>
+                                <button type="submit" class="btn btn-primary px-1">Update</button>
                             </td>
                         </form>
                     </tr>
-                    <?php
+            <?php
                 }
             }
             ?>
@@ -186,15 +196,23 @@
     <script>
         function amountUpdate(element) {
             var totalAmount = document.getElementById("totalAmount" + element).innerHTML;
-            console.log(totalAmount);
             var paymentStatus = document.getElementById("paymentStatus" + element).value;
-            console.log(paymentStatus);
             if (paymentStatus == "Full Received") {
                 document.getElementById("amountReceived" + element).value = totalAmount;
-            } else if (paymentStatus == "Gift" || paymentStatus == "Due") {
+                document.getElementById("amountReceived" + element).readOnly = true;
+                document.getElementById("dateOfPayment" + element).required = true;
+                document.getElementById("paymentMode" + element).required = true;
+            } else if (paymentStatus == "Partial Received") {
+                document.getElementById("amountReceived" + element).value = "";
+                document.getElementById("amountReceived" + element).required = true;
+                document.getElementById("dateOfPayment" + element).required = true;
+                document.getElementById("paymentMode" + element).required = true;
+            } else if (paymentStatus == "Due" || paymentStatus == "Free") {
                 document.getElementById("amountReceived" + element).value = 0;
-            } else if (paymentStatus == "NIL") {
-                document.getElementById("amountReceived" + element).value = 0;
+                document.getElementById("dateOfPayment" + element).value = "";
+                document.getElementById("dateOfPayment" + element).required = false;
+                document.getElementById("paymentMode" + element).value = "";
+                document.getElementById("paymentMode" + element).required = false;
             }
         }
     </script>
