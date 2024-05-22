@@ -204,10 +204,14 @@
                 document.getElementById("paymentMode" + element).required = true;
             } else if (paymentStatus == "Partial Received") {
                 document.getElementById("amountReceived" + element).value = "";
+                document.getElementById("dateOfPayment" + element).value = "";
+                document.getElementById("paymentMode" + element).value = "";
+                document.getElementById("amountReceived" + element).readOnly = false;
                 document.getElementById("amountReceived" + element).required = true;
                 document.getElementById("dateOfPayment" + element).required = true;
                 document.getElementById("paymentMode" + element).required = true;
             } else if (paymentStatus == "Due" || paymentStatus == "Free") {
+                document.getElementById("amountReceived" + element).readOnly = false;
                 document.getElementById("amountReceived" + element).value = 0;
                 document.getElementById("dateOfPayment" + element).value = "";
                 document.getElementById("dateOfPayment" + element).required = false;
