@@ -80,12 +80,17 @@ ob_start();
         .text-end {
             text-align: right;
         }
-        table, td, th {
+
+        table,
+        td,
+        th {
             border: 0px solid black;
         }
+
         .text-center {
             text-align: center;
         }
+
         .vertical-align {
             /* vertical-align: top; */
         }
@@ -177,7 +182,7 @@ ob_start();
 
         <tr id="lastRow">
             <td colspan="4" class="text-end">Total Amount</td>
-            <td id="totalAmount"><?php echo $TotalAmount; ?></td>
+            <td id="totalAmount" class='text-end' style='padding-right: 20px'><?php echo $TotalAmount; ?></td>
         </tr>
     </table>
     <br>

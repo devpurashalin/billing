@@ -125,11 +125,11 @@ if ($result->num_rows > 0) {
         </table>
         <table class="table" id="completeHeight">
             <tr class="forBorder heading">
-                <td class="fw-bold bg-warning">S. No.</td>
-                <td class="fw-bold bg-warning">Description</td>
-                <td class="fw-bold bg-warning">Qty.</td>
-                <td class="fw-bold bg-warning">Rate</td>
-                <td class="fw-bold bg-warning">Amount Rs.</td>
+                <td class="fw-bold text-center bg-warning">S. No.</td>
+                <td class="fw-bold text-center bg-warning">Description</td>
+                <td class="fw-bold text-center bg-warning">Qty.</td>
+                <td class="fw-bold text-center bg-warning">Rate</td>
+                <td class="fw-bold text-center bg-warning">Amount Rs.</td>
             </tr>
             <?php
             $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
