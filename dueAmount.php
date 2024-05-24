@@ -23,7 +23,10 @@
     <?php include "navbar.php"; ?>
     <div class="container my-5">
         <div class="container mb-3 row">
-            <div class="col-md col-0"><button class="btn btn-dark" onclick="CSVConvert()">Download as CSV</button></div>
+            <div class="col-md col-0">
+                <!-- <button class="btn btn-dark" onclick="CSVConvert()">Download as CSV</button> -->
+                <button class="btn btn-dark" onclick="ExcelConvert()">Download as Excel</button>
+            </div>
             <div class="col-md-4">
                 <input class="form-control" onkeyup="search(this);" type="text" id="searchInput" placeholder="Search">
             </div>
@@ -83,6 +86,7 @@
                 }
             });
         }
+
         function CSVConvert() {
             var table = document.getElementById('DueAmount');
             var rows = table.rows;
@@ -115,6 +119,14 @@
                     document.body.removeChild(link);
                 }
             }
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script>
+        function ExcelConvert() {
+            const table = document.getElementById('DueAmount');
+            const wb = XLSX.utils.table_to_book(table);
+            XLSX.writeFile(wb, 'Due Amount.xlsx');
         }
     </script>
 </body>

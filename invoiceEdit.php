@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             </table>
             <div class="d-flex justify-content-evenly">
                 <button class="btn btn-warning fw-bold" name="submit" value="Update">Update</button>
-                <button class="btn btn-primary fw-bold" name="submit" value="Print">Print</button>
+                <!-- <button class="btn btn-primary fw-bold" name="submit" value="Print">Print</button> -->
             </div>
         </form>
     </div>
@@ -236,7 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             let qty = document.getElementById("qty" + number).value;
             let rate = document.getElementById("rate" + number).value;
             let amount = qty * rate;
-            document.getElementById("amount_rs" + number).value = amount;
+            document.getElementById("amount_rs" + number).value = amount.toFixed(2);
             updateTotalAmount();
         }
         let count = <?php echo $count - 1; ?>;

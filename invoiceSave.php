@@ -33,6 +33,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: invoiceView?invoiceNo=$invoiceNo");
     } else if ($_POST['submit'] == 'Update') {
         $conn->execute_query("UPDATE `invoicetotal` SET `partyId` = '$partyId', `partyName` = '$partyName', `number` = '$number', `date` = '$date', `amount` = '$TotalAmount', `amountWord` = '$amountWord' WHERE `invoiceNo` = '$invoiceNo';");
-        header("Location: invoiceView?invoiceNo=$invoiceNo");
+        echo "<script>alert('Invoice Updated Successfully');</script>";
+        echo "<script>window.location.href='invoiceView?invoiceNo=$invoiceNo';</script>";
     }
 }

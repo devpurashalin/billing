@@ -26,6 +26,10 @@
         td, th {
             padding-left: 3px !important;
             padding-right: 3px !important;
+            font-size: medium;
+        }
+        th {
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -92,14 +96,14 @@
             <tr>
                 <th>Invoice No</th>
                 <th>Name</th>
-                <th>Date</th>
-                <th>Amount</th>
+                <!-- <th>Date</th> -->
+                <th style="width: 10%;">Amount</th>
                 <th>Payment Status</th>
                 <th>Payment Mode</th>
-                <th>Amount Received</th>
-                <th>Date of Payment</th>
-                <th>Discount, if any</th>
-                <th>Remark</th>
+                <th style="width: 8%;">Amount <br> Received</th>
+                <th style="width: 8%;">Date of Payment</th>
+                <th style="width: 8%;">Discount,<br>if any</th>
+                <th style="width: 8%;">Remark</th>
                 <th>Action</th>
             </tr>
             <?php
@@ -134,7 +138,7 @@
                     <tr>
                         <td><a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
                         <td><?php echo $partyName; ?></td>
-                        <td><?php echo date("d-m-Y", strtotime($date)); ?></td>
+                        <!-- <td><?php echo date("d-m-Y", strtotime($date)); ?></td> -->
                         <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
                         <form action="invoiceUpdate" method="post">
                             <td>

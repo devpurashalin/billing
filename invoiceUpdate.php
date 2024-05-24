@@ -3,10 +3,17 @@ include "db.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoiceNo = $_POST['invoiceNo'];
     $paymentStatus = $_POST['paymentStatus'];
-    $paymentMode = $_POST['paymentMode'];
-    $amountReceived = $_POST['amountReceived'];
+    if ($paymentStatus == "Free" || $paymentStatus == "Due") {
+        $paymentMode = NULL;
+        $amountReceived = NULL;
+        $dateOfPayment = NULL;
+    } else {
+        $paymentMode = $_POST['paymentMode'];
+        $amountReceived = $_POST['amountReceived'];
+        $dateOfPayment = $_POST['dateOfPayment'];
+    }
     $discount = $_POST['discount'];
-    $dateOfPayment = $_POST['dateOfPayment'];
+
     $remark = $_POST['remark'];
     $sql = "UPDATE invoicetotal SET 
                 paymentStatus = '$paymentStatus', 

@@ -205,7 +205,7 @@
             let qty = document.getElementById("qty" + number).value;
             let rate = document.getElementById("rate" + number).value;
             let amount = qty * rate;
-            document.getElementById("amount_rs" + number).value = amount;
+            document.getElementById("amount_rs" + number).value = amount.toFixed(2);
             updateTotalAmount();
         }
         let count = 1;
@@ -281,7 +281,7 @@
             const amount = qty * rate;
 
             // Update the amount input field
-            amountInput.value = isNaN(amount) ? '' : amount.toFixed(2);
+            amountInput.value = amount.toFixed(2);
 
             // Update the total amount
             updateTotalAmount();

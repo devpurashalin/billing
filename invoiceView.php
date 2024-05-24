@@ -64,7 +64,7 @@ if ($result->num_rows > 0) {
         }
 
         #completeHeight {
-            height: 45vh;
+            height: 40vh;
         }
 
         #completeHeight tr {
@@ -104,32 +104,37 @@ if ($result->num_rows > 0) {
                     <div class="text-center">Email : deepakprinters.jpr@gmail.com</div>
                 </td>
             </tr>
+        </table>
+        <table class="table">
             <tr>
                 <td class=""><label for="invoiceNo">Invoice No.</label></td>
-                <td colspan="2"><?php echo $invoiceNo; ?></td>
+                <td colspan=""><?php echo $invoiceNo; ?></td>
+                <td></td>
                 <td class=""><label for="date">Date</label></td>
                 <td><?php echo date("d-M-Y", strtotime($date)); ?></td>
             </tr>
             <tr>
                 <td class=""><label for="partyName">Name of Party</label></td>
-                <td colspan="2"><?php echo $partyName; ?></td>
+                <td colspan=""><?php echo $partyName; ?></td>
+                <td></td>
                 <td class=""><label for="GST_PAN">GST/PAN</label></td>
                 <td><?php echo $GST_PAN; ?></td>
             </tr>
             <tr>
                 <td class=""><label for="address">Address</label></td>
-                <td colspan="2"><?php echo $address; ?></td>
+                <td colspan=""><?php echo $address; ?></td>
+                <td></td>
                 <td class=""><label for="number">Mobile No.</label></td>
                 <td><?php echo $number; ?></td>
             </tr>
         </table>
         <table class="table" id="completeHeight">
             <tr class="forBorder heading">
-                <td class="fw-bold text-center bg-warning">S. No.</td>
-                <td class="fw-bold text-center bg-warning">Description</td>
-                <td class="fw-bold text-center bg-warning">Qty.</td>
-                <td class="fw-bold text-center bg-warning">Rate</td>
-                <td class="fw-bold text-center bg-warning">Amount Rs.</td>
+                <td style='width: 10%;' class="fw-bold text-center bg-light">S. No.</td>
+                <td class="fw-bold text-center bg-light">Description</td>
+                <td class="fw-bold text-center bg-light">Qty.</td>
+                <td class="fw-bold text-center bg-light">Rate</td>
+                <td style='width: 20%;' class="fw-bold text-center bg-light">Amount Rs.</td>
             </tr>
             <?php
             $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
@@ -141,7 +146,7 @@ if ($result->num_rows > 0) {
                     echo "<td>" . $row2['description'] . "</td>";
                     echo "<td class='text-center'>" . $row2['qty'] . "</td>";
                     echo "<td class='text-center'>" . $row2['rate'] . "</td>";
-                    echo "<td>" . $row2['amount'] . "</td>";
+                    echo "<td class='text-end'>" . $row2['amount'] . "</td>";
                     echo "</tr>";
                 }
             }
@@ -155,17 +160,19 @@ if ($result->num_rows > 0) {
             </tr>
             <tr class="forBorder heading fw-bold">
                 <td colspan="4" class="text-end">Total Amount</td>
-                <td id="totalAmount"><?php echo $TotalAmount; ?></td>
+                <td class='text-end' id="totalAmount"><?php echo $TotalAmount; ?></td>
             </tr>
         </table>
         <table class="table" id="footer">
             <tr>
                 <td colspan="5" id="totalAmountWords">Rs. (in words): <?php echo $amountWord; ?></td>
             </tr>
-            <tr><td></td></tr>
+            <tr>
+                <td></td>
+            </tr>
             <tr>
                 <td class="py-0" colspan="4"><b>Terms and Conditions:</b></td>
-                <td class="py-0 text-danger">For: <b>Deepak Printers</b></td>
+                <td class="py-0 text-danger text-end">For: <b>Deepak Printers</b></td>
             </tr>
 
             <tr>
@@ -174,13 +181,19 @@ if ($result->num_rows > 0) {
             </tr>
 
             <tr>
-                <td class="py-0" colspan="4">2. Goods Sold will not be taken back.</td>
+                <td class="py-0" colspan="4">2. Goods once sold will not be taken back.</td>
                 <td></td>
             </tr>
 
             <tr>
                 <td class="py-0" colspan="4">3. E. & O.E.</td>
-                <td>Authorised Signature</td>
+                <td class="text-end">Authorised Signature</td>
+            </tr>
+            <tr>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="5" class="text-center">This Invoice is computer generated, no signature required</td>
             </tr>
         </table>
     </div>
