@@ -44,7 +44,7 @@
                     <select class="form-control" name="partyId" id="partyId">
                         <option disabled value="" selected>Select</option>
                         <?php
-                        $sql = "SELECT * FROM party";
+                        $sql = "SELECT * FROM party WHERE `status` <> 'DELETED'";
                         $result = $conn->query($sql);
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {
@@ -59,7 +59,7 @@
                     <select class="form-control" name="partyName" id="partyName">
                         <option disabled value="" selected>Select</option>
                         <?php
-                        $sql = "SELECT * FROM party";
+                        $sql = "SELECT * FROM party WHERE `status` <> 'DELETED'";
                         $result = $conn->query($sql);
                         if ($result->num_rows > 0) {
                             while ($row = $result->fetch_assoc()) {

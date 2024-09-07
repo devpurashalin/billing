@@ -1,4 +1,7 @@
-<?php include 'db.php'; ?>
+<?php
+include 'db.php';
+date_default_timezone_set('Asia/Kolkata');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -74,17 +77,13 @@
                 </tr>
                 <tr>
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <?php
-                    $result = $conn->execute_query("SELECT count(`invoiceNo`) FROM `invoicetotal`");
-                    $maxInvoiceID = $result->fetch_assoc()['count(`invoiceNo`)'];
-                    ?>
-                    <td colspan="2"><input class="form-control" value="DP/INVOICE/<?php echo $maxInvoiceID + 1; ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td colspan="2"><input class="form-control" value="DP/<?php echo date('Ymd/his'); ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
                     <td class="text-end"><label for="date">Date</label></td>
                     <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
                 </tr>
                 <tr>
 
-                    <td class="text-end"><label for="partyName">Name of Party</label></td>
+                    <td class="text-end"><label for="partyName">Party Name</label></td>
 
                     <td colspan="2">
                         <div class="autocomplete" style="width:300px;">

@@ -96,7 +96,7 @@ include 'db.php';
                         }
                     }
                 } else {
-                    echo "<tr><td colspan='8'>No Data Found</td></tr>";
+                    echo "<tr><td colspan='9'>No Data Found</td></tr>";
                 }
                 ?>
             </tbody>

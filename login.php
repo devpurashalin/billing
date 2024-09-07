@@ -10,7 +10,8 @@ if (isset($_SESSION['username'])) {
 }
 if (isset($_POST['username']) && isset($_POST['password'])) {
     $username = $_POST['username'];
-    $pwd = $_POST['password'];
+    $pwd = hash('sha256', $_POST['password']);
+    // $pwd = $_POST['password'];
 
     include "connection.php";
     $sql = "SELECT * FROM `users` WHERE `username` = '$username' AND BINARY  `password` = '$pwd'";
@@ -25,6 +26,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         exit();
     } else {
         // Login failed
+        echo $pwd;
         echo 'Invalid username or password';
     }
 }
