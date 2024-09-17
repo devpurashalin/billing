@@ -81,21 +81,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         <form action="invoiceSave" method="post">
             <table class="table table-bordered" id="invoiceTable">
                 <tr>
-                    <td>PAN No.: ABCED1234E</td>
-                    <th class="text-center" colspan="3">
-                        <img src="./ganesh.jpeg" width="50px">
-                        <br>
-                        <u>Cash/Credit Memo</u>
-                    </th>
-                    <td class="text-end">Mob: 9887111141<br>9414060621</td>
+                    <td colspan="5">
+                        <div class="d-flex justify-content-between">
+                            <div>GSTIN: 08AWGPD7728Q1ZV</div>
+                            <div class="text-center" style="padding-right: 4rem;" colspan="3">
+                                <img src="./ganesh.jpeg" width="50px">
+                                <br>
+                                <u>Bill of Supply</u>
+                            </div>
+                            <div class="text-end">Mob: 9414060621<br>9887111141</div>
+                        </div>
+                    </td>
                 </tr>
                 <tr>
                     <td class="text-center text-danger h2" colspan="5">DEEPAK PRINTERS</td>
                 </tr>
                 <tr>
                     <td colspan="5">
-                        <div class="text-center">Deals in : Offset, Screen, Multi Colour Printing & Computer Design
-                            Works</div>
+                        <div class="text-center">Deals in: All Types of Printing Works and Digital Colour Printout</div>
                         <div class="text-center">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</div>
                         <div class="text-center">Email : deepakprinters.jpr@gmail.com</div>
                     </td>

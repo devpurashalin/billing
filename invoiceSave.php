@@ -30,6 +30,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<script>alert('Invoice Created Successfully');</script>";
         echo "<script>window.location.href='invoiceCreate';</script>";
     } else if ($_POST['submit'] == 'Print') {
+        $conn->execute_query("INSERT INTO `invoicetotal`
+        (`invoiceNo`, `partyId`, `partyName`, `number`, `date`, `amount`, `amountWord`, `paymentStatus`, `paymentMode`, `discount`) VALUES 
+        ('$invoiceNo','$partyId', '$partyName', '$number','$date','$TotalAmount', '$amountWord', 'Due','','NIL')");
+        
         header("Location: invoiceView?invoiceNo=$invoiceNo");
     } else if ($_POST['submit'] == 'Update') {
         $conn->execute_query("UPDATE `invoicetotal` SET `partyId` = '$partyId', `partyName` = '$partyName', `number` = '$number', `date` = '$date', `amount` = '$TotalAmount', `amountWord` = '$amountWord' WHERE `invoiceNo` = '$invoiceNo';");

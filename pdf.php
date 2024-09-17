@@ -3,7 +3,7 @@
 require_once './vendor/autoload.php'; // Adjust the path as needed
 require_once './connection.php'; // Adjust the path as needed
 // Create mPDF object
-$mpdf = new \Mpdf\Mpdf(['orientation' => 'L']);
+$mpdf = new \Mpdf\Mpdf(['orientation' => 'P']);
 $mpdf->SetMargins(0, 0, 5);
 if (isset($_GET['invoiceNo'])) {
     $invoiceNo = $_GET['invoiceNo'];
@@ -99,14 +99,14 @@ ob_start();
             <td style="padding-right: 20px;">
                 <table>
                     <tr>
-                        <td colspan="2" style="padding-top: 0;">PAN No.: ABCED1234E</td>
-                        <th colspan="3" style="padding: 10 140 10 80;">
+                        <td colspan="2" style="padding-top: 0;">GSTIN: 08AWGPD7728Q1ZV</td>
+                        <th colspan="3" style="padding-right: 5rem">
                             <img src="./ganesh.jpeg" width="35px">
                             <br>
-                            <u>Cash/Credit Memo</u>
+                            <u>Bill of Supply</u>
                         </th>
-                        <td class="text-end">Mob: 9887111141
-                            <br> 9414060621
+                        <td class="text-end">Mob: 9414060621
+                            <br> 9887111141
                         </td>
                     </tr>
                     <tr>
@@ -115,7 +115,7 @@ ob_start();
                         </th>
                     </tr>
                     <tr>
-                        <th colspan="6">Deals in : Offset, Screen, Multi Colour Printing & Computer Design Works</th>
+                        <th colspan="6">Deals in: All Types of Printing Works and Digital Colour Printout</th>
                     </tr>
                     <tr>
                         <td class="text-center" colspan="6">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
@@ -220,14 +220,14 @@ ob_start();
                     </tr>
                 </table>
             </td>
-            <td style="padding-left: 20px;">
+            <!-- <td style="padding-left: 20px;">
                 <table>
                     <tr>
-                        <td colspan="2" style="padding-top: 0;">PAN No.: ABCED1234E</td>
+                        <td colspan="2" style="padding-top: 0;">GSTIN: 08AWGPD7728Q1ZV</td>
                         <th colspan="3" style="padding: 10 140 10 80;">
                             <img src="./ganesh.jpeg" width="35px">
                             <br>
-                            <u>Cash/Credit Memo</u>
+                            <u>Bill of Supply</u>
                         </th>
                         <td class="text-end">Mob: 9887111141
                             <br> 9414060621
@@ -239,7 +239,7 @@ ob_start();
                         </th>
                     </tr>
                     <tr>
-                        <th colspan="6">Deals in : Offset, Screen, Multi Colour Printing & Computer Design Works</th>
+                        <th colspan="6">Deals in: All Types of Printing Works and Digital Colour Printout</th>
                     </tr>
                     <tr>
                         <td class="text-center" colspan="6">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
@@ -343,7 +343,7 @@ ob_start();
                         <td style="font-size: small;" colspan="5" class="text-center">This Invoice is computer generated, no signature required</td>
                     </tr>
                 </table>
-            </td>
+            </td> -->
         </tr>
     </table>
 </body>
