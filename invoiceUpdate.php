@@ -2,24 +2,25 @@
 include "db.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoiceNo = $_POST['invoiceNo'];
-    $paymentStatus = $_POST['paymentStatus'];
-    if ($paymentStatus == "Free" || $paymentStatus == "Due") {
-        $paymentMode = NULL;
-        $amountReceived = NULL;
-        $dateOfPayment = NULL;
-    } else {
-        $paymentMode = $_POST['paymentMode'];
-        $amountReceived = $_POST['amountReceived'];
-        $dateOfPayment = $_POST['dateOfPayment'];
+    $paymentMode = $_POST['paymentMode'];
+    $amountReceived = $_POST['amountReceived'];
+    $dateOfPayment = $_POST['dateOfPayment'];
+    $totalAmount = $_POST['totalAmount'];
+
+    if ($amountReceived > $totalAmount) {
+?>
+        <script>
+            alert('Amount received cannot be greater than total amount');
+            window.history.back();
+        </script>
+<?php
+        exit;
     }
-    $discount = $_POST['discount'];
 
     $remark = $_POST['remark'];
     $sql = "UPDATE invoicetotal SET 
-                paymentStatus = '$paymentStatus', 
                 paymentMode = '$paymentMode', 
                 amountReceived = '$amountReceived',
-                discount = '$discount',
                 dateOfPayment = '$dateOfPayment',
                 remark = '$remark'
             WHERE invoiceNo = '$invoiceNo'";

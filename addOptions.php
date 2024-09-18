@@ -39,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <select class="form-control" name="addingFor" id="addingFor" required>
                             <option disabled selected value="">Select</option>
                             <option value="invoiceitem">Invoice Item</option>
-                            <!-- <option value="paymentstatus">Payment Status</option> -->
                             <option value="paymentmode">Payment Mode</option>
                         </select>
                     </td>

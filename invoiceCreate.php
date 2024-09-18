@@ -79,17 +79,9 @@ date_default_timezone_set('Asia/Kolkata');
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <td colspan="2"><input class="form-control" value="DP/<?php echo date('Ymd/his'); ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
-                    <td class="text-end"><label for="date">Date</label></td>
-                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
-                </tr>
-                <tr>
-
                     <td class="text-end"><label for="partyName">Party Name</label></td>
-
                     <td colspan="2">
-                        <div class="autocomplete" style="width:300px;">
+                        <div class="autocomplete" style="width:100%;">
                             <input required class="form-control" oninput="fillData();" id="partyName" autocomplete="off" type="text" name="partyName">
                         </div>
                         <?php
@@ -111,8 +103,14 @@ date_default_timezone_set('Asia/Kolkata');
                         </select>
                     </td>
                     <input type="hidden" name="partyId" id="partyId">
+                    <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
+                    <td><input class="form-control" value="DP/<?php echo date('Ymd/his'); ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                </tr>
+                <tr>
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
-                    <td><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td colspan="2"><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td class="text-end"><label for="date">Date</label></td>
+                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
@@ -146,7 +144,8 @@ date_default_timezone_set('Asia/Kolkata');
                     <td><input type="text" class="form-control" id="amount_rs1" name="amount_rs1" readonly></td>
                 </tr>
                 <tr>
-                    <td colspan="4" class="text-end">Total Amount</td>
+                    <td colspan="3">Registered under composition scheme of GST</td>
+                    <td class="text-end">Total Amount</td>
                     <td><input type="text" class="form-control" id="total_amt" name="total_amt" readonly></td>
                 </tr>
                 <tr>

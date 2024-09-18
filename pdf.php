@@ -103,7 +103,7 @@ ob_start();
                         <th colspan="3" style="padding-right: 5rem">
                             <img src="./ganesh.jpeg" width="35px">
                             <br>
-                            <u>Bill of Supply</u>
+                            <u>Bill of Supply</u>
                         </th>
                         <td class="text-end">Mob: 9414060621
                             <br> 9887111141
@@ -180,7 +180,8 @@ ob_start();
                     ?>
 
                     <tr id="lastRow">
-                        <th style="background: transparent;" colspan="4" class="text-end">Total Amount</th>
+                        <td colspan="3">Registered under composition scheme of GST</td>
+                        <td style="background: transparent;" class="text-end">Total Amount</td>
                         <th id="totalAmount" class='text-end' style='padding-right: 20px; background: transparent;'><?php echo $TotalAmount; ?></th>
                     </tr>
                 </table>
@@ -227,7 +228,7 @@ ob_start();
                         <th colspan="3" style="padding: 10 140 10 80;">
                             <img src="./ganesh.jpeg" width="35px">
                             <br>
-                            <u>Bill of Supply</u>
+                            <u>Bill of Supply</u>
                         </th>
                         <td class="text-end">Mob: 9887111141
                             <br> 9414060621

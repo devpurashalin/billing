@@ -8,6 +8,7 @@
     <title>Users</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         #UserForm {
             border: 1px solid rgba(0, 0, 0, 0.1) !important;
@@ -54,6 +55,7 @@
                     <th>Name</th>
                     <th>Username</th>
                     <th>Action</th>
+                    <th>Inactive/<br>Active</th>
                 </tr>
             </thead>
             <tbody>
@@ -66,6 +68,11 @@
                         echo "<td>" . $row['name'] . "</td>";
                         echo "<td>" . $row['username'] . "</td>";
                         echo "<td><button class='btn btn-danger' onclick='deleteUser(\"" . $row['username'] . "\")'>Delete</button></td>";
+                        if ($row['status'] == 'ACTIVE') {
+                            echo '<td><a class="text-success" href="userModify.php?id=' . $row['username'] . '&action=INACTIVE"><i class="fa fa-toggle-on"></i></a></td>';
+                        } else {
+                            echo '<td><a class="text-danger" href="userModify.php?id=' . $row['username'] . '&action=ACTIVE"><i class="fa fa-toggle-off"></i></a></td>';
+                        }
                         echo "</tr>";
                     }
                 } else {
@@ -78,7 +85,7 @@
     <script>
         function deleteUser(id) {
             if (confirm("Are you sure you want to delete this user?")) {
-                window.location.href = "userModify.php?id=" + id;
+                window.location.href = "userModify.php?id=" + id + "&action=delete";
             }
         }
     </script>

@@ -49,7 +49,7 @@
                         $partyId = $row['ID'];
                         $partyName = $row['name'];
                         $number = $row['number'];
-                        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived FROM invoicetotal WHERE partyId = '$partyId' AND (paymentStatus = 'Due' OR paymentStatus = 'Partial Received')";
+                        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived FROM invoicetotal WHERE partyId = '$partyId'";
                         $result1 = $conn->query($sql1);
                         $row1 = $result1->fetch_assoc();
                         $amountReceived = $row1['amountReceived'];

@@ -14,7 +14,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 $username = $_GET['id'];
-$sql = "DELETE FROM users WHERE username = '$username'";
+$action = $_GET['action'];
+if ($action == 'INACTIVE') {
+    $sql = "UPDATE users SET status = 'INACTIVE' WHERE username = '$username'";
+} else {
+    $sql = "UPDATE users SET status = 'ACTIVE' WHERE username = '$username'";
+}
+
+if ($action == 'delete') {
+    $sql = "DELETE FROM users WHERE username = '$username'";
+}
+
 $result = mysqli_query($conn, $sql);
 if ($result) {
     header('Location: users.php');

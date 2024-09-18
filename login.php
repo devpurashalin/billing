@@ -14,7 +14,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     // $pwd = $_POST['password'];
 
     include "connection.php";
-    $sql = "SELECT * FROM `users` WHERE `username` = '$username' AND BINARY  `password` = '$pwd'";
+    $sql = "SELECT * FROM `users` WHERE `username` = '$username' AND BINARY  `password` = '$pwd' AND `status` = 'ACTIVE'";
     $result = $conn->query($sql);
     if ($result && $result->num_rows > 0) {
         // Login successful
@@ -26,7 +26,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         exit();
     } else {
         // Login failed
-        echo $pwd;
         echo 'Invalid username or password';
     }
 }

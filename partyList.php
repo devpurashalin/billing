@@ -18,7 +18,7 @@ include 'db.php';
         }
 
         #partyForm {
-            border: 1px solid rgba(0,0,0,0.1);
+            border: 1px solid rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -98,7 +98,7 @@ include 'db.php';
                         echo "<td>" . $row['email'] . "</td>";
                         echo "<td>" . $row['GST_PAN'] . "</td>";
                         echo "<td><a class='text-dark' href='partyModify.php?id=" . $row['ID'] . "&action=edit'><i class='fa fa-edit'></i></a>";
-                        echo '<td><i style="cursor: pointer;" class="fa fa-trash text-danger" onclick="deleteConfirm(\'' . $row['ID'] .'\')"></i>';
+                        echo '<td><i style="cursor: pointer;" class="fa fa-trash text-danger" onclick="deleteConfirm(\'' . $row['ID'] . '\')"></i>';
                         if ($row['status'] == 'ACTIVE') {
                             echo '<td><a class="text-success" href="partyModify.php?id=' . $row['ID'] . '&action=INACTIVE"><i class="fa fa-toggle-on"></i></a></td>';
                         } else {

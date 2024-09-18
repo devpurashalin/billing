@@ -163,7 +163,8 @@ if ($result->num_rows > 0) {
                 <td></td>
             </tr>
             <tr class="forBorder heading fw-bold">
-                <td colspan="4" class="text-end">Total Amount</td>
+                <td colspan="3">Registered under composition scheme of GST</td>
+                <td class="text-end">Total Amount</td>
                 <td class='text-end' id="totalAmount"><?php echo $TotalAmount; ?></td>
             </tr>
         </table>

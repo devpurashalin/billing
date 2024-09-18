@@ -178,7 +178,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 }
                 ?>
                 <tr>
-                    <td colspan="4" class="text-end">Total Amount</td>
+                    <td colspan="3">Registered under composition scheme of GST</td>
+                    <td class="text-end">Total Amount</td>
                     <td><input type="text" class="form-control" id="total_amt" name="total_amt" readonly></td>
                 </tr>
                 <tr>
