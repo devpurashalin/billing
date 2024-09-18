@@ -1,6 +1,48 @@
 <?php
 include 'db.php';
 date_default_timezone_set('Asia/Kolkata');
+function getFinancialYear() {
+    $currentYear = date('y');
+    $currentMonth = date('m');
+
+    // If current month is April or later, financial year starts from the current year
+    if ($currentMonth >= 4) {
+        $nextYear = $currentYear + 1;
+        return $currentYear . '-' . $nextYear;
+    } else {
+        // If before April, financial year starts from the previous year
+        $previousYear = $currentYear - 1;
+        return $previousYear . '-' . $currentYear;
+    }
+}
+
+// Generate the serial number
+function generateInvoiceNumber($conn) {
+    $financialYear = getFinancialYear();
+
+    // Prepare and execute the SQL query to get the max serial number
+    $query = "SELECT MAX(CAST(SUBSTRING_INDEX(invoiceNo, '/', -1) AS UNSIGNED)) as max_serial
+              FROM invoicetotal
+              WHERE invoiceNo LIKE ?";
+    
+    $stmt = $conn->prepare($query);
+    $likePattern = "DP/$financialYear/%";
+    $stmt->bind_param('s', $likePattern);
+    $stmt->execute();
+    $stmt->bind_result($maxSerial);
+    $stmt->fetch();
+    $stmt->close();
+
+    // If no invoices exist for the current financial year, start from 1
+    $newSerial = $maxSerial ? $maxSerial + 1 : 1;
+
+    // Generate the new invoice number
+    $invoiceNo = "DP/$financialYear/$newSerial";
+
+    return $invoiceNo;
+}
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,7 +146,7 @@ date_default_timezone_set('Asia/Kolkata');
                     </td>
                     <input type="hidden" name="partyId" id="partyId">
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <td><input class="form-control" value="DP/<?php echo date('Ymd/his'); ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td><input readonly class="form-control" value="<?php echo generateInvoiceNumber($conn)?>" type="text" name="invoiceNo" id="invoiceNo"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
