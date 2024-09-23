@@ -100,7 +100,7 @@ ob_start();
                 <table>
                     <tr>
                         <td colspan="2" style="padding-top: 0;">GSTIN: 08AWGPD7728Q1ZV</td>
-                        <th colspan="3" style="padding-right: 5rem">
+                        <th colspan="3" style="padding-right: 9rem">
                             <img src="./ganesh.jpeg" width="35px">
                             <br>
                             <u>Bill of Supply</u>
@@ -124,22 +124,20 @@ ob_start();
                         <td style='padding-bottom: 25x;' class="text-center" colspan="6">Email : deepakprinters.jpr@gmail.com</td>
                     </tr>
                     <tr>
-                        <td><label for="invoiceNo">Invoice No.</label></td>
-                        <td colspan="3"><?php echo $invoiceNo; ?></td>
-                        <td><label for="date">Date</label></td>
-                        <td><?php echo $date; ?></td>
-                    </tr>
-                    <tr>
                         <td><label for="partyName">Name of Party</label></td>
                         <td colspan="3"><?php echo $partyName; ?></td>
-                        <td><label for="GST_PAN">GST/PAN</label></td>
-                        <td><?php echo $GST_PAN; ?></td>
+                        <td><label for="invoiceNo">Invoice No.</label></td>
+                        <td><?php echo $invoiceNo; ?></td>
                     </tr>
                     <tr>
                         <td><label for="address">Address</label></td>
                         <td colspan="3"><?php echo $address; ?></td>
-                        <td><label for="number">Mobile No.</label></td>
-                        <td><?php echo $number; ?></td>
+                    </tr>
+                    <tr>
+                        <td><label for="GST_PAN">GST/PAN</label></td>
+                        <td colspan="3"><?php echo $GST_PAN; ?></td>
+                        <td><label for="date">Date</label></td>
+                        <td><?php echo $date; ?></td>
                     </tr>
                 </table>
                 <br>

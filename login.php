@@ -47,7 +47,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12">
-                <h1 class="text-center">Admin Login</h1>
+                <h1 class="text-center">DEEPAK PRINTERS</h1>
             </div>
         </div>
         <div class="row justify-content-center">

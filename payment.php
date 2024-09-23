@@ -81,86 +81,101 @@
                 </div>
             </div>
         </form>
-        <table class="table table-bordered my-5">
-            <tr>
-                <th style="width: 10%;">Invoice No</th>
+        <div class="table-responsive">
+            <table class="table table-bordered my-5">
+                <tr>
+                    <!-- <th style="width: 10%;">Invoice No</th>
                 <th>Name</th>
                 <th style="width: 10%;">Amount</th>
                 <th style="width: 10%;">Payment Mode</th>
                 <th style="width: 10%;">Amount Received</th>
                 <th style="width: 8%;">Date of Payment</th>
-                <th>Discount / Remark</th>
-                <th style="width: 8%;">Action</th>
-            </tr>
-            <?php
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                if (isset($_POST['invoiceNo']) && $_POST['invoiceNo'] != "") {
-                    $invoiceNo = $_POST['invoiceNo'];
-                    $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
-                } else if (isset($_POST['partyId']) && $_POST['partyId'] != "") {
-                    $partyId = $_POST['partyId'];
-                    $sql = "SELECT * FROM invoicetotal WHERE partyId = '$partyId'";
-                } else if (isset($_POST['partyName']) && $_POST['partyName'] != "") {
-                    $partyName = $_POST['partyName'];
-                    $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName'";
+                <th>Discount</th>
+                <th>Remark</th>
+                <th style="width: 8%;">Action</th> -->
+                    <th>Invoice No</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Payment Mode</th>
+                    <th>Amount Received</th>
+                    <th>Date of Payment</th>
+                    <th>Discount</th>
+                    <th>Remark</th>
+                    <th>Action</th>
+                </tr>
+                <?php
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    if (isset($_POST['invoiceNo']) && $_POST['invoiceNo'] != "") {
+                        $invoiceNo = $_POST['invoiceNo'];
+                        $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
+                    } else if (isset($_POST['partyId']) && $_POST['partyId'] != "") {
+                        $partyId = $_POST['partyId'];
+                        $sql = "SELECT * FROM invoicetotal WHERE partyId = '$partyId'";
+                    } else if (isset($_POST['partyName']) && $_POST['partyName'] != "") {
+                        $partyName = $_POST['partyName'];
+                        $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName'";
+                    } else {
+                        exit;
+                    }
                 } else {
                     exit;
                 }
-            } else {
-                exit;
-            }
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
-                $count = 0;
-                while ($row = $result->fetch_assoc()) {
-                    $count++;
-                    $invoiceNo = $row['invoiceNo'];
-                    $partyName = $row['partyName'];
-                    $date = $row['date'];
-                    $TotalAmount = $row['amount'];
-                    $dateOfPayment = $row['dateOfPayment'];
-                    $remark = $row['remark'];
-            ?>
-                    <tr>
-                        <td><a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
-                        <td><?php echo $partyName; ?></td>
-                        <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
-                        <form action="invoiceUpdate" method="post">
-                            <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
-                            <input type="hidden" name="totalAmount" value="<?php echo $TotalAmount; ?>">
-                            <td>
-                                <select class="form-control" name="paymentMode" id="paymentMode<?php echo $count; ?>">
-                                    <option value="" selected>Select</option>
-                                    <?php
-                                    $paymentMode = $row['paymentMode'];
-                                    $tempsql = "SELECT * FROM `paymentmode`;";
-                                    $tempresult = $conn->query($tempsql);
-                                    if ($tempresult->num_rows > 0) {
-                                        while ($temprow = $tempresult->fetch_assoc()) {
-                                            $selected = "";
-                                            if ($paymentMode == $temprow['value']) {
-                                                $selected = "selected";
+                $result = $conn->query($sql);
+                if ($result->num_rows > 0) {
+                    $count = 0;
+                    while ($row = $result->fetch_assoc()) {
+                        $count++;
+                        $invoiceNo = $row['invoiceNo'];
+                        $partyName = $row['partyName'];
+                        $date = $row['date'];
+                        $TotalAmount = $row['amount'];
+                        $dateOfPayment = $row['dateOfPayment'];
+                        $discount = $row['discount'];
+                        $remark = $row['remark'];
+                ?>
+                        <tr>
+                            <td><a target="_blank" href="invoiceView.php?invoiceNo=<?php echo $invoiceNo; ?>"><?php echo $invoiceNo; ?></a></td>
+                            <td><?php echo $partyName; ?></td>
+                            <td id="totalAmount<?php echo $count; ?>"><?php echo $TotalAmount; ?></td>
+                            <form action="invoiceUpdate" method="post">
+                                <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
+                                <input type="hidden" name="totalAmount" value="<?php echo $TotalAmount; ?>">
+                                <td>
+                                    <select class="form-control" name="paymentMode" id="paymentMode<?php echo $count; ?>">
+                                        <option value="" selected>Select</option>
+                                        <?php
+                                        $paymentMode = $row['paymentMode'];
+                                        $tempsql = "SELECT * FROM `paymentmode`;";
+                                        $tempresult = $conn->query($tempsql);
+                                        if ($tempresult->num_rows > 0) {
+                                            while ($temprow = $tempresult->fetch_assoc()) {
+                                                $selected = "";
+                                                if ($paymentMode == $temprow['value']) {
+                                                    $selected = "selected";
+                                                }
+                                                echo "<option value='" . $temprow['value'] . "' $selected>" . $temprow['value'] . "</option>";
                                             }
-                                            echo "<option value='" . $temprow['value'] . "' $selected>" . $temprow['value'] . "</option>";
                                         }
-                                    }
-                                    ?>
-                                </select>
-                            </td>
-                            <td>
-                                <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
-                            </td>
-                            <td><input type="date" class="form-control" name="dateOfPayment" id="dateOfPayment<?php echo $count; ?>" value="<?php echo $dateOfPayment; ?>"></td>
-                            <td><input type="text" class="form-control" name="remark" id="reamrk<?php echo $count; ?>" value="<?php echo $remark; ?>"></td>
-                            <td>
-                                <button type="submit" class="btn btn-primary px-1">Update</button>
-                            </td>
-                        </form>
-                    </tr>
-            <?php
+                                        ?>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" id="amountReceived<?php echo $count; ?>" name="amountReceived" class="form-control" value="<?php echo $row['amountReceived']; ?>">
+                                </td>
+                                <td><input type="date" class="form-control" name="dateOfPayment" id="dateOfPayment<?php echo $count; ?>" value="<?php echo $dateOfPayment; ?>"></td>
+                                <td><input type="text" class="form-control" name="discount" id="discount<?php echo $count; ?>" value="<?php echo $discount; ?>"></td>
+                                <td><input type="text" class="form-control" name="remark" id="reamrk<?php echo $count; ?>" value="<?php echo $remark; ?>"></td>
+                                <td>
+                                    <button type="submit" class="btn btn-primary px-1">Update</button>
+                                </td>
+                            </form>
+                        </tr>
+                <?php
+                    }
                 }
-            }
-            ?>
+                ?>
+            </table>
+        </div>
     </div>
 </body>
 

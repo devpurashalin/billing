@@ -111,25 +111,24 @@ if ($result->num_rows > 0) {
         </table>
         <table class="table">
             <tr>
-                <td class=""><label for="invoiceNo">Invoice No.</label></td>
-                <td colspan=""><?php echo $invoiceNo; ?></td>
+                <td><label for="partyName">Name of Party</label></td>
+                <td><?php echo $partyName; ?></td>
                 <td></td>
-                <td class=""><label for="date">Date</label></td>
-                <td><?php echo date("d-M-Y", strtotime($date)); ?></td>
+                <td><label for="invoiceNo">Invoice No.</label></td>
+                <td><?php echo $invoiceNo; ?></td>
             </tr>
             <tr>
-                <td class=""><label for="partyName">Name of Party</label></td>
-                <td colspan=""><?php echo $partyName; ?></td>
+                <td><label for="address">Address</label></td>
+                <td><?php echo $address; ?></td>
                 <td></td>
-                <td class=""><label for="GST_PAN">GST/PAN</label></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td><label for="GST_PAN">GST/PAN</label></td>
                 <td><?php echo $GST_PAN; ?></td>
-            </tr>
-            <tr>
-                <td class=""><label for="address">Address</label></td>
-                <td colspan=""><?php echo $address; ?></td>
                 <td></td>
-                <td class=""><label for="number">Mobile No.</label></td>
-                <td><?php echo $number; ?></td>
+                <td><label for="date">Date</label></td>
+                <td><?php echo date("d-M-Y", strtotime($date)); ?></td>
             </tr>
         </table>
         <table class="table" id="completeHeight">

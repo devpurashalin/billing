@@ -49,12 +49,13 @@
                         $partyId = $row['ID'];
                         $partyName = $row['name'];
                         $number = $row['number'];
-                        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived FROM invoicetotal WHERE partyId = '$partyId'";
+                        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived, SUM(discount) AS discount FROM invoicetotal WHERE partyId = '$partyId'";
                         $result1 = $conn->query($sql1);
                         $row1 = $result1->fetch_assoc();
                         $amountReceived = $row1['amountReceived'];
                         $total = $row1['total'];
-                        $dueAmount = $total - $amountReceived;
+                        $discount = $row1['discount'];
+                        $dueAmount = $total - $amountReceived - $discount;
                         if ($dueAmount == 0) {
                             continue;
                         }

@@ -6,23 +6,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $amountReceived = $_POST['amountReceived'];
     $dateOfPayment = $_POST['dateOfPayment'];
     $totalAmount = $_POST['totalAmount'];
+    $discount = $_POST['discount'];
+    $remark = $_POST['remark'];
 
-    if ($amountReceived > $totalAmount) {
+
+
+    if (($amountReceived + $discount) > $totalAmount) {
 ?>
         <script>
-            alert('Amount received cannot be greater than total amount');
+            alert('Amount received & discount cannot be greater than total amount');
             window.history.back();
         </script>
 <?php
         exit;
     }
-
-    $remark = $_POST['remark'];
+    
     $sql = "UPDATE invoicetotal SET 
                 paymentMode = '$paymentMode', 
                 amountReceived = '$amountReceived',
                 dateOfPayment = '$dateOfPayment',
-                remark = '$remark'
+                remark = '$remark',
+                discount = '$discount'
             WHERE invoiceNo = '$invoiceNo'";
     if ($conn->query($sql) === TRUE) {
 ?>

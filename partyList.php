@@ -16,10 +16,6 @@ include 'db.php';
         #partyForm td {
             border: 0px !important;
         }
-
-        #partyForm {
-            border: 1px solid rgba(0, 0, 0, 0.5);
-        }
     </style>
 </head>
 

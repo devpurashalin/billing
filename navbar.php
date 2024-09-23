@@ -1,9 +1,9 @@
 <style>
-    .table-bordered {
-        border-color: rgba(0, 0, 0, 0.5);
+    .nav-link:hover {
+        background-color: gray;
+        font-weight: bold;
     }
 </style>
-
 <nav class="navbar navbar-expand-lg bg-body-tertiary d-print-none">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" style="color: rgb(7, 32, 105);" href="index">DEEPAK PRINTERS</a>
@@ -11,11 +11,6 @@
             aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <style>
-            .nav-item {
-                border: 1px solid #000;
-            }
-        </style>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
@@ -40,7 +35,7 @@
 
         </div>
         <div class="btn btn-danger">
-            <a class="nav-link" href="logout">Logout</a>
+            <a class="text-decoration-none text-white" href="logout">Logout</a>
         </div>
     </div>
 </nav>

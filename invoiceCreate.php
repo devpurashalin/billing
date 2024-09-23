@@ -1,7 +1,8 @@
 <?php
 include 'db.php';
 date_default_timezone_set('Asia/Kolkata');
-function getFinancialYear() {
+function getFinancialYear()
+{
     $currentYear = date('y');
     $currentMonth = date('m');
 
@@ -17,14 +18,15 @@ function getFinancialYear() {
 }
 
 // Generate the serial number
-function generateInvoiceNumber($conn) {
+function generateInvoiceNumber($conn)
+{
     $financialYear = getFinancialYear();
 
     // Prepare and execute the SQL query to get the max serial number
     $query = "SELECT MAX(CAST(SUBSTRING_INDEX(invoiceNo, '/', -1) AS UNSIGNED)) as max_serial
               FROM invoicetotal
               WHERE invoiceNo LIKE ?";
-    
+
     $stmt = $conn->prepare($query);
     $likePattern = "DP/$financialYear/%";
     $stmt->bind_param('s', $likePattern);
@@ -146,19 +148,19 @@ function generateInvoiceNumber($conn) {
                     </td>
                     <input type="hidden" name="partyId" id="partyId">
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <td><input readonly class="form-control" value="<?php echo generateInvoiceNumber($conn)?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td><input readonly class="form-control" value="<?php echo generateInvoiceNumber($conn) ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                </tr>
+                <tr>
+                    <td class="text-end"><label for="address">Address</label></td>
+                    <td colspan="2"><input required class="form-control" type="text" name="address" id="address"></td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
                     <td colspan="2"><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
                     <td class="text-end"><label for="date">Date</label></td>
                     <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
-                </tr>
-                <tr>
-                    <td class="text-end"><label for="address">Address</label></td>
-                    <td colspan="2"><input required class="form-control" type="text" name="address" id="address"></td>
-                    <td class="text-end"><label for="number">Mobile No.</label></td>
-                    <td><input required class="form-control" type="text" name="number" id="number"></td>
+                    
                 </tr>
                 <tr class="text-center">
                     <td class="fw-bold bg-light">S. No.</td>
@@ -234,12 +236,10 @@ function generateInvoiceNumber($conn) {
             if (index >= 0) {
                 document.getElementById("GST_PAN").value = partyData[index].GST_PAN;
                 document.getElementById("address").value = partyData[index].address;
-                document.getElementById("number").value = partyData[index].number;
                 document.getElementById("partyId").value = partyData[index].ID;
             } else {
                 document.getElementById("GST_PAN").value = "";
                 document.getElementById("address").value = "";
-                document.getElementById("number").value = "";
                 document.getElementById("partyId").value = "";
             }
         }
