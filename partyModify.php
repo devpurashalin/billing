@@ -25,8 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $id = $_GET['id'];
     $action = $_GET['action'];
-    echo $id . "<br>";
-    echo $action;
     if ($action == "delete") {
         $sql = "UPDATE party SET status = 'DELETED' WHERE ID = '$id'";
         if (mysqli_query($conn, $sql)) {

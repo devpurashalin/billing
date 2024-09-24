@@ -160,7 +160,7 @@ function generateInvoiceNumber($conn)
                     <td colspan="2"><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
                     <td class="text-end"><label for="date">Date</label></td>
                     <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
-                    
+
                 </tr>
                 <tr class="text-center">
                     <td class="fw-bold bg-light">S. No.</td>
@@ -455,7 +455,12 @@ function generateInvoiceNumber($conn)
                         a.appendChild(b);
                     }
                 }
+                var x = document.getElementById(this.id + "autocomplete-list");
+                if (x) x = x.getElementsByTagName("div");
+                currentFocus++;
+                addActive(x);
             });
+
             inp.addEventListener("keydown", function(e) {
                 var x = document.getElementById(this.id + "autocomplete-list");
                 if (x) x = x.getElementsByTagName("div");
