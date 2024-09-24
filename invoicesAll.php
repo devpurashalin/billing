@@ -31,15 +31,15 @@
             <table class="table table-bordered" id="invoiceData">
                 <thead>
                     <tr>
-                        <th>Invoice No</th>
-                        <th>Customer Name</th>
-                        <th>Invoice Date</th>
-                        <th>Amount</th>
-                        <th>Amount Received</th>
-                        <th>Payment Mode</th>
-                        <th>Date of Payment</th>
-                        <th>Discount</th>
-                        <th>Remark</th>
+                        <th class="bg-light">Invoice No</th>
+                        <th class="bg-light">Customer Name</th>
+                        <th class="bg-light">Invoice Date</th>
+                        <th class="bg-light">Amount</th>
+                        <th class="bg-light">Amount Received</th>
+                        <th class="bg-light">Payment Mode</th>
+                        <th class="bg-light">Payment Date</th>
+                        <th class="bg-light">Discount</th>
+                        <th class="bg-light">Remark</th>
                     </tr>
                 </thead>
                 <?php

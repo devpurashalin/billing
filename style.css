@@ -1,3 +1,4 @@
-* {
-    color: rgb(7, 32, 105);
+.btn-primary {
+    background-color: rgb(7, 32, 105);
+    border: 0;
 }

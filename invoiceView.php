@@ -78,10 +78,10 @@ if ($result->num_rows > 0) {
     <div class="my-5 container h-100" id="forPrint">
         <div class="d-flex gap-5 my-5 d-print-none">
             <button class="btn btn-primary" onclick="window.print()">Print</button>
-            <a class="text-decoration-none btn btn-success" target="_blank" href="pdf?invoiceNo=<?php echo $invoiceNo; ?>">Save as PDF</a>
+            <a class="text-decoration-none btn btn-danger" target="_blank" href="pdf?invoiceNo=<?php echo $invoiceNo; ?>">Save as PDF</a>
             <form action="./invoiceEdit" method="post">
                 <input type="hidden" name="invoiceNo" value="<?php echo $invoiceNo; ?>">
-                <button type="submit" class="btn btn-warning">Edit</button>
+                <button type="submit" class="btn border">Edit</button>
             </form>
         </div>
         <table class="table" id="invoiceTable">

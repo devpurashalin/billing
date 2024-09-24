@@ -123,7 +123,7 @@ function generateInvoiceNumber($conn)
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-end"><label for="partyName">Party Name</label></td>
+                    <td class="text-end"><label for="partyName">Name of Customer</label></td>
                     <td colspan="2">
                         <div class="autocomplete" style="width:100%;">
                             <input required class="form-control" oninput="fillData();" id="partyName" autocomplete="off" type="text" name="partyName">
@@ -156,7 +156,7 @@ function generateInvoiceNumber($conn)
                     <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
+                    <td class="text-end"><label for="GST_PAN">GSTIN/PAN</label></td>
                     <td colspan="2"><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
                     <td class="text-end"><label for="date">Date</label></td>
                     <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
@@ -167,7 +167,7 @@ function generateInvoiceNumber($conn)
                     <td class="fw-bold bg-light">Description</td>
                     <td class="fw-bold bg-light">Qty.</td>
                     <td class="fw-bold bg-light">Rate</td>
-                    <td class="fw-bold bg-light">Amount Rs.</td>
+                    <td class="fw-bold bg-light">Amount</td>
                 </tr>
                 <tr>
                     <td><input type="text" class="form-control" id="sno1" name="sno1" value="1" required></td>
@@ -213,7 +213,7 @@ function generateInvoiceNumber($conn)
                 </tr>
 
                 <tr>
-                    <td colspan="4">2. Goods Sold will not be taken back.</td>
+                    <td colspan="4">2. Goods once sold will not be taken back.</td>
                     <td></td>
                 </tr>
 
@@ -223,7 +223,7 @@ function generateInvoiceNumber($conn)
                 </tr>
             </table>
             <div class="d-flex justify-content-evenly">
-                <button class="btn btn-warning fw-bold" name="submit" value="Save">Save</button>
+                <button class="btn btn-danger fw-bold" name="submit" value="Save">Save</button>
                 <button class="btn btn-primary fw-bold" name="submit" value="Print">Print</button>
             </div>
         </form>

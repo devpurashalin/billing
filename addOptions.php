@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <form class="addOptionForm" action="addOptions" method="post">
             <table class="table">
                 <tr>
-                    <th><label for="addingFor">Adding For</label></th>
+                    <th><label class="fw-normal" for="addingFor">Adding for</label></th>
                     <td>
                         <select class="form-control" name="addingFor" id="addingFor" required>
                             <option disabled selected value="">Select</option>
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </td>
                 </tr>
                 <tr>
-                    <th><label for="content">Content To be Added</label></th>
+                    <th><label class="fw-normal" for="content">Content to be added</label></th>
                     <td><input class="form-control" type="text" name="content" id="content" placeholder="Write here"
                             required></td>
                 </tr>
@@ -64,27 +64,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </table>
         </form>
 
-        <div class="row">
+        <div class="row ">
             <div class="col-12 col-md-6">
-                <table class="table">
-                    <tr>
-                        <th>Invoice Item</th>
-                        <th>Delete</th>
-                        <th>Edit</th>
-                    </tr>
+                <div class="h5 text-center">Invoice Item</div>
+                <table class="table table-bordered">
                     <?php
                     $sql = "SELECT * FROM invoiceitem";
                     $result = $conn->query($sql);
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr><td>{$row['value']}</td>";
                     ?>
-                        <td>
-                            <a class="btn btn-danger" href="deleteOption.php?table=invoiceitem&id=<?php echo $row['value']; ?>">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
                         <td class="d-flex">
-                            <button onclick="edit('<?php echo $row['value']; ?>', 'invoiceitem')" class="btn btn-primary"><i class="fas fa-edit"></i></button>
+                            <i class="fas fa-edit text-primary" onclick="edit('<?php echo $row['value']; ?>', 'invoiceitem')"></i>
+                        </td>
+                        <td>
+                            <a href="deleteOption.php?table=invoiceitem&id=<?php echo $row['value']; ?>">
+                                <i class="fas fa-trash text-danger"></i>
+                            </a>
                         </td>
                         </tr>
                     <?php
@@ -93,25 +89,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </table>
             </div>
             <div class="col-12 col-md-6">
-                <table class="table">
-                    <tr>
-                        <th>Payment Mode</th>
-                        <th>Delete</th>
-                        <th>Edit</th>
-                    </tr>
+                <div class="text-center h5">Payment Mode</div>
+                <table class="table table-bordered border-warning">
                     <?php
                     $sql = "SELECT * FROM paymentmode";
                     $result = $conn->query($sql);
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr><td>{$row['value']}</td>";
                     ?>
-                        <td>
-                            <a class="btn btn-danger" href="deleteOption.php?table=paymentmode&id=<?php echo $row['value']; ?>">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
                         <td class="d-flex">
-                            <button onclick="edit('<?php echo $row['value']; ?>', 'paymentmode')" class="btn btn-primary"><i class="fas fa-edit"></i></button>
+                            <i onclick="edit('<?php echo $row['value']; ?>', 'paymentmode')" class="fas fa-edit text-primary"></i>
+                        </td>
+                        <td>
+                            <a href="deleteOption.php?table=paymentmode&id=<?php echo $row['value']; ?>">
+                                <i class="fas fa-trash text-danger"></i>
+                            </a>
                         </td>
                         </tr>
                     <?php

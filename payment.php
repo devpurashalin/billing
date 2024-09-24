@@ -111,7 +111,7 @@
         <form action="payment" method="POST">
             <div class="row">
                 <div class="col-md-3">
-                    Party Name
+                    Customer Name
 
                     <div class="autocompleteName" style="width:100%;">
                         <input oninput="document.getElementById('invoiceNo').value = ''" required class="form-control" id="partyName" autocomplete="off" type="text" name="partyName">
@@ -327,15 +327,15 @@
                 <th>Discount</th>
                 <th>Remark</th>
                 <th style="width: 8%;">Action</th> -->
-                    <th>Invoice No</th>
-                    <th>Name</th>
-                    <th>Amount</th>
-                    <th>Payment Mode</th>
-                    <th>Amount Received</th>
-                    <th>Date of Payment</th>
-                    <th>Discount</th>
-                    <th>Remark</th>
-                    <th>Action</th>
+                    <th class="bg-light">Invoice No</th>
+                    <th class="bg-light">Name</th>
+                    <th class="bg-light">Amount</th>
+                    <th class="bg-light">Payment Mode</th>
+                    <th class="bg-light">Amount Received</th>
+                    <th class="bg-light">Payment Date</th>
+                    <th class="bg-light">Discount</th>
+                    <th class="bg-light">Remark</th>
+                    <th class="bg-light">Action</th>
                 </tr>
                 <?php
                 if ($_SERVER["REQUEST_METHOD"] == "POST") {

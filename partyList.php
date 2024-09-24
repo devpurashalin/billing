@@ -38,12 +38,12 @@ include 'db.php';
                 <tr>
                     <td><label for="name">Name of Customer</label></td>
                     <td>:</td>
-                    <td><input type="text" oninput="capitalize()" name="name" id="name" class="form-control" required></td>
+                    <td><input type="text" name="name" id="name" class="form-control" required></td>
                 </tr>
                 <tr>
                     <td><label for="address">Address</label></td>
                     <td>:</td>
-                    <td><input type="text" oninput="capitalize()" name="address" id="address" class="form-control" required></td>
+                    <td><input type="text" name="address" id="address" class="form-control" required></td>
                 </tr>
                 <tr>
                     <td><label for="number">Mobile Number</label></td>
@@ -51,14 +51,14 @@ include 'db.php';
                     <td><input type="text" name="number" id="number" class="form-control" pattern="[0-9]{10}" title="Please enter a 10-digit number" required></td>
                 </tr>
                 <tr>
-                    <td><label for="email">Email</label></td>
+                    <td><label for="email">Email ID</label></td>
                     <td>:</td>
-                    <td><input type="email" name="email" id="email" class="form-control" required></td>
+                    <td><input type="email" name="email" id="email" class="form-control"></td>
                 </tr>
                 <tr>
-                    <td><label for="GST_PAN">GST/PAN</label></td>
+                    <td><label for="GST_PAN">GSTIN/PAN</label></td>
                     <td>:</td>
-                    <td><input type="text" oninput="capitalize()" name="GST_PAN" id="GST_PAN" class="form-control" required></td>
+                    <td><input type="text" oninput="capitalize()" name="GST_PAN" id="GST_PAN" class="form-control"></td>
                 </tr>
                 <tr>
                     <td class="text-center" colspan="3"><button class="btn btn-primary" name="submit" value="add" type="submit">SUBMIT</button></td>
@@ -66,18 +66,16 @@ include 'db.php';
             </table>
         </form>
         <div class="h3 text-center">List of All Customers</div>
-        <table class="table table-bordered table-striped">
+        <table class="table table-bordered table-striped mb-5">
             <thead>
                 <tr>
                     <th>Customer ID</th>
                     <th>Name of Customer</th>
                     <th>Address</th>
-                    <th>Mobile Number</th>
-                    <th>Email</th>
-                    <th>GST/PAN</th>
-                    <th>Edit</th>
-                    <th>Delete</th>
-                    <th>Inactive/<br>Active</th>
+                    <th>Mobile</th>
+                    <th>Email ID</th>
+                    <th>GSTIN/PAN</th>
+                    <th colspan="3">Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -93,7 +91,7 @@ include 'db.php';
                         echo "<td>" . $row['number'] . "</td>";
                         echo "<td>" . $row['email'] . "</td>";
                         echo "<td>" . $row['GST_PAN'] . "</td>";
-                        echo "<td><a class='text-dark' href='partyModify.php?id=" . $row['ID'] . "&action=edit'><i class='fa fa-edit'></i></a>";
+                        echo "<td><a class='text-primary' href='partyModify.php?id=" . $row['ID'] . "&action=edit'><i class='fa fa-edit'></i></a>";
                         echo '<td><i style="cursor: pointer;" class="fa fa-trash text-danger" onclick="deleteConfirm(\'' . $row['ID'] . '\')"></i>';
                         if ($row['status'] == 'ACTIVE') {
                             echo '<td><a class="text-success" href="partyModify.php?id=' . $row['ID'] . '&action=INACTIVE"><i class="fa fa-toggle-on"></i></a></td>';

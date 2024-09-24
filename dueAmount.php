@@ -34,10 +34,10 @@
         <table id="DueAmount" class="table table-bordered">
             <thead>
                 <tr>
-                    <th>Party ID</th>
-                    <th>Party Name</th>
-                    <th>Mobile No</th>
-                    <th>Due Amount</th>
+                    <th class="bg-light">Customer ID</th>
+                    <th class="bg-light">Customer Name</th>
+                    <th class="bg-light">Mobile No</th>
+                    <th class="bg-light">Due Amount</th>
                 </tr>
             </thead>
             <tbody>
