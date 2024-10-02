@@ -89,12 +89,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
                         <tr>
                             <td><label for="email">Email</label></td>
                             <td>:</td>
-                            <td><input type="email" name="email" id="email" class="form-control" value="<?php echo $row['email'] ?>" required></td>
+                            <td><input type="email" name="email" id="email" class="form-control" value="<?php echo $row['email'] ?>"></td>
                         </tr>
                         <tr>
                             <td><label for="GST_PAN">GST/PAN</label></td>
                             <td>:</td>
-                            <td><input type="text" name="GST_PAN" id="GST_PAN" class="form-control" value="<?php echo $row['GST_PAN'] ?>" required></td>
+                            <td><input type="text" name="GST_PAN" id="GST_PAN" class="form-control" value="<?php echo $row['GST_PAN'] ?>"></td>
                         </tr>
                         <tr>
                             <td class="text-center" colspan="3"><button class="btn btn-primary" name="submit" value="edit" type="submit">SUBMIT</button></td>

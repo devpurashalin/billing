@@ -66,7 +66,16 @@ include 'db.php';
             </table>
         </form>
         <div class="h3 text-center">List of All Customers</div>
-        <table class="table table-bordered table-striped mb-5">
+        <div class="container mb-3 row">
+            <div class="col-md col-0">
+                <!-- <button class="btn btn-dark" onclick="CSVConvert()">Download as CSV</button> -->
+                <button class="btn btn-dark" onclick="ExcelConvert()">Download as Excel</button>
+            </div>
+            <div class="col-md-4">
+                <input class="form-control" oninput="search(this);" type="text" id="searchInput" placeholder="Search">
+            </div>
+        </div>
+        <table id="partyData" class="table table-bordered table-striped mb-5">
             <thead>
                 <tr>
                     <th>Customer ID</th>
@@ -108,10 +117,6 @@ include 'db.php';
     </div>
     <script>
         function capitalize() {
-            var x = document.getElementById("name");
-            x.value = x.value.toUpperCase();
-            var y = document.getElementById("address");
-            y.value = y.value.toUpperCase();
             var z = document.getElementById("GST_PAN");
             z.value = z.value.toUpperCase();
         }
@@ -121,6 +126,30 @@ include 'db.php';
             if (confirmation) {
                 window.location.href = "partyModify.php?id=" + id + "&action=delete";
             }
+        }
+    </script>
+
+    <script>
+        function search(input) {
+            let inputValue = input.value.toLowerCase();
+            let rows = document.querySelectorAll("#partyData tbody tr");
+
+            rows.forEach(row => {
+                let rowData = row.textContent.toLowerCase();
+                if (rowData.includes(inputValue)) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <script>
+        function ExcelConvert() {
+            const table = document.getElementById('partyData');
+            const wb = XLSX.utils.table_to_book(table);
+            XLSX.writeFile(wb, 'Customers.xlsx');
         }
     </script>
 </body>

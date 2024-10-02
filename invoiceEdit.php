@@ -104,17 +104,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <td colspan="2"><input class="form-control" value="<?php echo $invoiceNo ?>" type="text" name="invoiceNo" id="invoiceNo" readonly></td>
-                    <td class="text-end"><label for="date">Date</label></td>
-                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo $date; ?>"></td>
-                </tr>
-                <tr>
-
                     <td class="text-end"><label for="partyName">Name of Party</label></td>
                     <td colspan="2">
-                        <div class="autocomplete" style="width:300px;">
-                            <input required class="form-control" oninput="fillData();" value="<?php echo $partyName; ?>" id="partyName" autocomplete="off" type="text" name="partyName">
+                        <div class="autocomplete" style="width: 100%;">
+                            <input required class="form-control" oninput="fillData();" value="<?php echo $partyName . " (" . $partyId . ")"; ?>" id="partyName" autocomplete="off" type="text" name="partyName">
                         </div>
                         <?php
                         $query = "SELECT * FROM `party` WHERE status='ACTIVE';";
@@ -126,23 +119,29 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         ?>
                         <script>
                             let partyData = <?php echo json_encode($data); ?>;
-                            let partyName = partyData.map(item => item.name);
+                            let partyName = partyData.map(item => item.name + ' (' + item.ID + ')');
 
                             function findIndexById(id) {
-                                return partyData.findIndex(item => item.name === id);
+                                return partyData.findIndex(item => (item.name + " (" + item.ID + ")") === id);
                             }
                         </script>
                         </select>
                     </td>
                     <input type="hidden" name="partyId" id="partyId">
-                    <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
-                    <td><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
+                    <td colspan="2"><input class="form-control" value="<?php echo $invoiceNo ?>" type="text" name="invoiceNo" id="invoiceNo" readonly></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
                     <td colspan="2"><input required class="form-control" type="text" name="address" id="address"></td>
-                    <td class="text-end"><label for="number">Mobile No.</label></td>
-                    <td><input required class="form-control" type="text" name="number" id="number"></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
+                    <td colspan="2"><input class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td class="text-end"><label for="date">Date</label></td>
+                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo $date; ?>"></td>
                 </tr>
                 <tr class="text-center">
                     <td class="fw-bold bg-light">S. No.</td>
@@ -170,7 +169,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                         echo '>' . $temprow['value'] . '</option>';
                     }
                     echo '</select></td>';
-                    echo '<td><input type="text" oninput="updateAmount(' . $count . ')" class="form-control" id="qty' . $count . '" name="qty' . $count . '" value="' . $row['qty'] . '" required></td>';
+                    echo '<td>
+                        <input type="text" oninput="splitAmount(' . $count . ')" class="form-control" id="qtyu' . $count . '" name="qty' . $count . '" required value="' . $row['qty'] . '">
+                        <input type="hidden" id="qty' . $count . '">
+                    </td>';
                     echo '<td><input type="text" oninput="updateAmount(' . $count . ')" class="form-control" id="rate' . $count . '" name="rate' . $count . '" value="' . $row['rate'] . '" required></td>';
                     echo '<td><input type="text" class="form-control" id="amount_rs' . $count . '" name="amount_rs' . $count . '" value="' . $row['amount'] . '" readonly></td>';
                     echo '</tr>';
@@ -221,17 +223,17 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <script>
         function fillData() {
             let name = document.getElementById("partyName");
-            name.value = name.value.toUpperCase();
+            // name.value = name.value.toUpperCase();
             let index = findIndexById(name.value);
             if (index >= 0) {
                 document.getElementById("GST_PAN").value = partyData[index].GST_PAN;
                 document.getElementById("address").value = partyData[index].address;
-                document.getElementById("number").value = partyData[index].number;
+                // document.getElementById("number").value = partyData[index].number;
                 document.getElementById("partyId").value = partyData[index].ID;
             } else {
                 document.getElementById("GST_PAN").value = "";
                 document.getElementById("address").value = "";
-                document.getElementById("number").value = "";
+                // document.getElementById("number").value = "";
                 document.getElementById("partyId").value = "";
             }
         }
@@ -243,7 +245,21 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             document.getElementById("amount_rs" + number).value = amount.toFixed(2);
             updateTotalAmount();
         }
+
+        function splitAmount(number) {
+            let qty = document.getElementById("qty" + number);
+            let qtyu = document.getElementById("qtyu" + number).value;
+
+            let qtyN = qtyu.split(" ");
+            qty.value = qtyN[0];
+            updateAmount(number)
+        }
+
         let count = <?php echo $count - 1; ?>;
+
+        for (let index = 1; index <= count; index++) {
+            splitAmount(index);
+        }
 
         function addRow() {
             if (isCurrentRowFilled()) {
@@ -260,7 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                                                                                                                                                                                                 echo '<option value="' . $temprow['value'] . '">' . $temprow['value'] . '</option>';
                                                                                                                                                                                             } ?></select>';
                 let cell3 = row.insertCell(2);
-                cell3.innerHTML = '<input type="text" oninput="updateAmount(' + count + ')" class="form-control" id="qty' + count + '" name="qty' + count + '" required>';
+                cell3.innerHTML = '<input type="text" oninput="splitAmount(' + count + ')" class="form-control" id="qtyu' + count + '" name="qty' + count + '" required><input type="hidden" id="qty' + count + '">';
                 let cell4 = row.insertCell(3);
                 cell4.innerHTML = '<input type="text" oninput="updateAmount(' + count + ')" class="form-control" id="rate' + count + '" name="rate' + count + '" required>';
                 let cell5 = row.insertCell(4);
@@ -433,7 +449,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 a.setAttribute("class", "autocomplete-items");
                 this.parentNode.appendChild(a);
                 for (i = 0; i < arr.length; i++) {
-                    let index = arr[i].indexOf(val.toUpperCase());
+                    let index = arr[i].toUpperCase().indexOf(val.toUpperCase());
                     if (index > -1) {
                         b = document.createElement("DIV");
                         b.innerHTML = arr[i].substr(0, index);
@@ -495,8 +511,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     </script>
     <script>
         fillData();
-        // calculateAmount();
-        updateTotalAmount();
     </script>
 </body>
 

@@ -1,49 +1,6 @@
 <?php
 include 'db.php';
 date_default_timezone_set('Asia/Kolkata');
-function getFinancialYear()
-{
-    $currentYear = date('y');
-    $currentMonth = date('m');
-
-    // If current month is April or later, financial year starts from the current year
-    if ($currentMonth >= 4) {
-        $nextYear = $currentYear + 1;
-        return $currentYear . '-' . $nextYear;
-    } else {
-        // If before April, financial year starts from the previous year
-        $previousYear = $currentYear - 1;
-        return $previousYear . '-' . $currentYear;
-    }
-}
-
-// Generate the serial number
-function generateInvoiceNumber($conn)
-{
-    $financialYear = getFinancialYear();
-
-    // Prepare and execute the SQL query to get the max serial number
-    $query = "SELECT MAX(CAST(SUBSTRING_INDEX(invoiceNo, '/', -1) AS UNSIGNED)) as max_serial
-              FROM invoicetotal
-              WHERE invoiceNo LIKE ?";
-
-    $stmt = $conn->prepare($query);
-    $likePattern = "DP/$financialYear/%";
-    $stmt->bind_param('s', $likePattern);
-    $stmt->execute();
-    $stmt->bind_result($maxSerial);
-    $stmt->fetch();
-    $stmt->close();
-
-    // If no invoices exist for the current financial year, start from 1
-    $newSerial = $maxSerial ? $maxSerial + 1 : 1;
-
-    // Generate the new invoice number
-    $invoiceNo = "DP/$financialYear/$newSerial";
-
-    return $invoiceNo;
-}
-
 
 ?>
 <!DOCTYPE html>
@@ -55,6 +12,7 @@ function generateInvoiceNumber($conn)
     <title>Invoice Create</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <style>
         /*the container must be positioned relative:*/
         .autocomplete {
@@ -138,17 +96,12 @@ function generateInvoiceNumber($conn)
                         ?>
                         <script>
                             let partyData = <?php echo json_encode($data); ?>;
-                            let partyName = partyData.map(item => item.name);
-
-                            function findIndexById(id) {
-                                return partyData.findIndex(item => item.name === id);
-                            }
+                            let partyName = partyData.map(item => item.name + ' (' + item.ID + ')');
                         </script>
-                        </select>
                     </td>
                     <input type="hidden" name="partyId" id="partyId">
                     <td class="text-end"><label for="invoiceNo">Invoice No.</label></td>
-                    <td><input readonly class="form-control" value="<?php echo generateInvoiceNumber($conn) ?>" type="text" name="invoiceNo" id="invoiceNo"></td>
+                    <td><input readonly class="form-control" type="text" name="invoiceNo" id="invoiceNo"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
@@ -157,9 +110,9 @@ function generateInvoiceNumber($conn)
                 </tr>
                 <tr>
                     <td class="text-end"><label for="GST_PAN">GSTIN/PAN</label></td>
-                    <td colspan="2"><input required class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
+                    <td colspan="2"><input class="form-control" type="text" name="GST_PAN" id="GST_PAN"></td>
                     <td class="text-end"><label for="date">Date</label></td>
-                    <td><input class="form-control" type="date" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
+                    <td><input class="form-control" type="date" onchange="generateInvoiceNo()" name="date" id="date" value="<?php echo date("Y-m-d"); ?>"></td>
 
                 </tr>
                 <tr class="text-center">
@@ -183,7 +136,10 @@ function generateInvoiceNumber($conn)
                             ?>
                         </select>
                     </td>
-                    <td><input type="text" oninput="updateAmount(1)" class="form-control" id="qty1" name="qty1" required></td>
+                    <td>
+                        <input type="text" oninput="splitAmount(1)" class="form-control" id="qtyu1" name="qty1" required>
+                        <input type="hidden" id="qty1">
+                    </td>
                     <td><input type="text" oninput="updateAmount(1)" class="form-control" id="rate1" name="rate1" required></td>
                     <td><input type="text" class="form-control" id="amount_rs1" name="amount_rs1" readonly></td>
                 </tr>
@@ -229,9 +185,14 @@ function generateInvoiceNumber($conn)
         </form>
     </div>
     <script>
+        function findIndexById(id) {
+            return partyData.findIndex(item => (item.name + " (" + item.ID + ")" ) === id);
+        }
+
         function fillData() {
             let name = document.getElementById("partyName");
-            name.value = name.value.toUpperCase();
+            
+            // name.value = name.value.toUpperCase();
             let index = findIndexById(name.value);
             if (index >= 0) {
                 document.getElementById("GST_PAN").value = partyData[index].GST_PAN;
@@ -251,6 +212,16 @@ function generateInvoiceNumber($conn)
             document.getElementById("amount_rs" + number).value = amount.toFixed(2);
             updateTotalAmount();
         }
+
+        function splitAmount(number) {
+            let qty = document.getElementById("qty" + number);
+            let qtyu = document.getElementById("qtyu" + number).value;
+
+            let qtyN = qtyu.split(" ");
+            qty.value = qtyN[0];
+            updateAmount(number)
+        }
+
         let count = 1;
 
         function addRow() {
@@ -268,7 +239,7 @@ function generateInvoiceNumber($conn)
                                                                                                                                                                                                 echo '<option value="' . $temprow['value'] . '">' . $temprow['value'] . '</option>';
                                                                                                                                                                                             } ?></select>';
                 let cell3 = row.insertCell(2);
-                cell3.innerHTML = '<input type="text" oninput="updateAmount(' + count + ')" class="form-control" id="qty' + count + '" name="qty' + count + '" required>';
+                cell3.innerHTML = '<input type="text" oninput="splitAmount(' + count + ')" class="form-control" id="qtyu' + count + '" name="qty' + count + '" required><input type="hidden" id="qty' + count + '">';
                 let cell4 = row.insertCell(3);
                 cell4.innerHTML = '<input type="text" oninput="updateAmount(' + count + ')" class="form-control" id="rate' + count + '" name="rate' + count + '" required>';
                 let cell5 = row.insertCell(4);
@@ -441,7 +412,7 @@ function generateInvoiceNumber($conn)
                 a.setAttribute("class", "autocomplete-items");
                 this.parentNode.appendChild(a);
                 for (i = 0; i < arr.length; i++) {
-                    let index = arr[i].indexOf(val.toUpperCase());
+                    let index = arr[i].toUpperCase().indexOf(val.toUpperCase());
                     if (index > -1) {
                         b = document.createElement("DIV");
                         b.innerHTML = arr[i].substr(0, index);
@@ -505,6 +476,22 @@ function generateInvoiceNumber($conn)
             });
         }
         autocomplete(document.getElementById("partyName"), partyName);
+
+        function generateInvoiceNo() {
+            let date = document.getElementById('date');
+            $.ajax({
+                url: 'generateInvoiceNo.php',
+                type: 'POST',
+                data: {
+                    date: date.value
+                },
+                success: function(response) {
+                    document.getElementById('invoiceNo').value = response;
+                }
+            });
+        }
+
+        window.onload = generateInvoiceNo;
     </script>
 
 </body>

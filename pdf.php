@@ -1,355 +1,270 @@
 <?php
-// Include mPDF library
-require_once './vendor/autoload.php'; // Adjust the path as needed
-require_once './connection.php'; // Adjust the path as needed
-// Create mPDF object
-$mpdf = new \Mpdf\Mpdf(['orientation' => 'P']);
-$mpdf->SetMargins(0, 0, 5);
-if (isset($_GET['invoiceNo'])) {
+require 'vendor/autoload.php';
+include 'db.php';
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
     $invoiceNo = $_GET['invoiceNo'];
 } else {
-    header("Location: ./invoicesAll.php");
     exit;
 }
-
 $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $invoiceNo = $row['invoiceNo'];
-    $partyId = $row['partyId'];
     $partyName = $row['partyName'];
-    $number = $row['number'];
+    $gst = $row['gst'];
+    $address = $row['address'];
     $date = $row['date'];
-    $TotalAmount = $row['amount'];
     $amountWord = $row['amountWord'];
-    $sql1 = "SELECT * FROM party WHERE ID = '$partyId'";
-    $result1 = $conn->query($sql1);
-    $row1 = $result1->fetch_assoc();
-    $address = $row1['address'];
-    $GST_PAN = $row1['GST_PAN'];
+    $TotalAmount = $row['amount'];
 } else {
     echo "No Record Found";
     exit;
 }
-$date = date("d-M-Y", strtotime($date));
 
-// Render HTML content
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+// Instantiate and use the dompdf class
+$options = new Options();
+$options->set('defaultFont', 'Arial');
+$dompdf = new Dompdf($options);
+$data = base64_encode(file_get_contents('hindi.jpg'));
+$src = 'data:image/jpeg;base64,'.$data;
+// Load HTML content
 ob_start();
-// include 'invoicesAll.php'; // Include the PHP page you want to convert to PDF
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $invoiceNo; ?></title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 14px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 100%;
+            margin: 20px auto;
+            border: 2px solid black;
+            padding: 5px;
+            /* padding-top: 0; */
+            margin: 0;
+            font-size: 0.95rem;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            margin: 10px 0;
         }
 
-        table th,
-        table td {
-            padding: 5px;
-        }
-
-        #completeHeight {
+        th,
+        td {
+            padding: 0.5rem;
             border: 1px solid black;
         }
 
-        #completeHeight td {
-            border-left: 1px solid black;
+        th {
+            background-color: #f2f2f2;
         }
 
-        #completeHeight th {
-            border: 1px solid black;
-            background-color: yellow;
-        }
-
-        #lastRow td {
-            border-top: 1px solid black;
+        .text-center {
+            text-align: center;
         }
 
         .text-end {
             text-align: right;
         }
 
-        table,
-        td,
-        th {
-            border: 0px solid black;
+        .text-danger {
+            color: red;
         }
 
-        .text-center {
-            text-align: center;
+        .h5 {
+            font-size: 1.1rem;
+        }
+
+        .h2 {
+            font-size: 1.75rem;
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .py-custom-1 {
+            padding-top: 0.2rem;
+            padding-bottom: 0.2rem;
+        }
+
+        .no-border th,
+        .no-border td {
+            border: none;
+        }
+
+        .p-0 {
+            padding: 0;
+        }
+
+        .m-0 {
+            margin: 0;
+        }
+
+        .py-0 {
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .border-none-invoice td{
+            border-bottom-color: lightgray;
         }
     </style>
 </head>
 
 <body>
-    <table>
-        <tr>
-            <td style="padding-right: 20px;">
-                <table>
-                    <tr>
-                        <td colspan="2" style="padding-top: 0;">GSTIN: 08AWGPD7728Q1ZV</td>
-                        <th colspan="3" style="padding-right: 9rem">
-                            <img src="./ganesh.jpeg" width="35px">
-                            <br>
-                            <u>Bill of Supply</u>
-                        </th>
-                        <td class="text-end">Mob: 9414060621
-                            <br> 9887111141
-                        </td>
-                    </tr>
-                    <tr>
-                        <th colspan="6">
-                            <h1 style="color: #dc3545;">DEEPAK PRINTERS</h1>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th colspan="6">Deals in: All Types of Printing Works and Digital Colour Printout</th>
-                    </tr>
-                    <tr>
-                        <td class="text-center" colspan="6">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
-                    </tr>
-                    <tr>
-                        <td style='padding-bottom: 25x;' class="text-center" colspan="6">Email : deepakprinters.jpr@gmail.com</td>
-                    </tr>
-                    <tr>
-                        <td><label for="partyName">Name of Party</label></td>
-                        <td colspan="3"><?php echo $partyName; ?></td>
-                        <td><label for="invoiceNo">Invoice No.</label></td>
-                        <td><?php echo $invoiceNo; ?></td>
-                    </tr>
-                    <tr>
-                        <td><label for="address">Address</label></td>
-                        <td colspan="3"><?php echo $address; ?></td>
-                    </tr>
-                    <tr>
-                        <td><label for="GST_PAN">GST/PAN</label></td>
-                        <td colspan="3"><?php echo $GST_PAN; ?></td>
-                        <td><label for="date">Date</label></td>
-                        <td><?php echo $date; ?></td>
-                    </tr>
-                </table>
-                <br>
-                <table id="completeHeight">
-                    <tr>
-                        <th style="width: 10%;">S. No.</th>
-                        <th>Description</th>
-                        <th style="width: 15%;">Qty.</th>
-                        <th style="width: 15%;">Rate</th>
-                        <th style="width: 20%;">Amount Rs.</th>
-                    </tr>
-                    <?php
-                    $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
-                    $result2 = $conn->query($sql2);
-                    if ($result2->num_rows > 0) {
-                        $count = 0;
-                        while ($row2 = $result2->fetch_assoc()) {
-                            $count++;
-                            echo "<tr>";
-                            echo "<td class='text-center'>" . $row2['SNo'] . "</td>";
-                            echo "<td>" . $row2['description'] . "</td>";
-                            echo "<td class='text-center'>" . $row2['qty'] . "</td>";
-                            echo "<td class='text-center'>" . $row2['rate'] . "</td>";
-                            echo "<td class='text-end' style='padding-right: 20px'>" . $row2['amount'] . "</td>";
-                            echo "</tr>";
-                        }
-                    }
-                    while ($count < 15) {
-                        $count++;
-                        echo "<tr>";
-                        echo "<td style='padding-top: 13px; padding-bottom: 14x;'></td>";
-                        echo "<td></td>";
-                        echo "<td></td>";
-                        echo "<td></td>";
-                        echo "<td></td>";
-                        echo "</tr>";
-                    }
-                    ?>
+    <div class="container">
+        <div style="width: 98%; margin: auto;">
+            <table style="width: 100%; border: 0;">
+                <tr>
+                    <td style="width: 33%; border: 0;">GSTIN: 08AWGPD7728Q1ZV<br> State: Rajasthan</td>
+                    <td style="width: 34%; border: 0;" class="text-center"><img src="<?php echo $src; ?>" alt="Not Found"></td>
+                    <td style="width: 33%; border: 0;" class="text-end">Mob: 9414060621<br>9887111141</td>
+                </tr>
+            </table>
+            <div class="h5 text-center"><b><u>BILL OF SUPPLY</u></b></div>
+            <div class="text-center text-danger h2">DEEPAK PRINTERS</div>
+            <div>
+                <div class="text-center">Deals in: All Types of Printing Works and Digital Colour Printout</div>
+                <div class="text-center fw-bold">Infront of SBI Bank, Jagatpura, Jaipur-302017</div>
+                <div class="text-center">Email: deepakprinters.jpr@gmail.com</div>
+            </div>
+        </div>
+        <table class="table table-bordered mx-auto">
+            <tr>
+                <td colspan="3">
+                    <table class="no-border p-0 m-0">
+                        <tr class="p-0">
+                            <td style="width: 30%;" class="p-0">Name of Party:</td>
+                            <td style="width: 70%;" class="p-0"><?php echo $partyName; ?></td>
+                        </tr>
+                        <tr class="p-0">
+                            <td class="p-0">Address:</td>
+                            <td class="p-0"><?php echo $address; ?></td>
+                        </tr>
+                        <tr class="p-0">
+                            <td class="p-0">GSTIN/PAN:</td>
+                            <td class="p-0"><?php echo $gst; ?></td>
+                        </tr>
+                    </table>
+                </td>
+                <td colspan="2">
+                    <table class="no-border p-0">
+                        <tr class="p-0">
+                            <td style="width: 35%;" class="p-0">Invoice No:</td>
+                            <td style="width: 65%;" class="p-0"><?php echo $invoiceNo; ?></td>
+                        </tr>
+                        <tr class="p-0">
+                            <td class="p-0">Date:</td>
+                            <td class="p-0"><?php echo date("d-m-Y", strtotime($date)); ?></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr class="text-center">
+                <th style="width: 5%;">S.No.</th>
+                <th style="width: 34%;">Description</th>
+                <th style="width: 22%;">Qty.</th>
+                <th style="width: 19%;">Rate</th>
+                <th style="width: 20%;">Amount</th>
+            </tr>
 
-                    <tr id="lastRow">
-                        <td colspan="3">Registered under composition scheme of GST</td>
-                        <td style="background: transparent;" class="text-end">Total Amount</td>
-                        <th id="totalAmount" class='text-end' style='padding-right: 20px; background: transparent;'><?php echo $TotalAmount; ?></th>
+            <?php
+            $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
+            $result2 = $conn->query($sql2);
+            if ($result2->num_rows > 0) {
+                $count = 1;
+                while ($row2 = $result2->fetch_assoc()) {
+            ?>
+                    <tr class="<?php if ($count != 14) { ?>border-none-invoice<?php } ?>">
+                        <td class="text-center"><?php echo $row2['SNo']; ?></td>
+                        <td><?php echo $row2['description']; ?></td>
+                        <td class="text-center"><?php echo $row2['qty']; ?></td>
+                        <td class="text-center"><?php echo $row2['rate']; ?></td>
+                        <td class="text-end pe-2"><?php echo $row2['amount']; ?></td>
                     </tr>
-                </table>
-                <br>
-                <table id="footer">
-                    <tr>
-                        <td style="padding-bottom: 25px;" colspan="5" id="totalAmountWords">Rs. (in words): <?php echo $amountWord; ?></td>
-                    </tr>
-                    <tr></tr>
-                    <tr>
-                        <td colspan="4"><b>Terms and Conditions:</b></td>
-                        <td class="text-end" style="color: #dc3545;">For: <b>Deepak Printers</b></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4">1. All subject to Jaipur jurisdiction only.</td>
-                        <td></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4">2. Goods once sold will not be taken back.</td>
-                        <td></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4">3. E. & O.E.</td>
-                        <td class="text-end">Authorised Signature</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="font-size: small;" colspan="5" class="text-center">This Invoice is computer generated, no signature required</td>
-                    </tr>
-                </table>
-            </td>
-            <!-- <td style="padding-left: 20px;">
-                <table>
-                    <tr>
-                        <td colspan="2" style="padding-top: 0;">GSTIN: 08AWGPD7728Q1ZV</td>
-                        <th colspan="3" style="padding: 10 140 10 80;">
-                            <img src="./ganesh.jpeg" width="35px">
-                            <br>
-                            <u>Bill of Supply</u>
-                        </th>
-                        <td class="text-end">Mob: 9887111141
-                            <br> 9414060621
-                        </td>
-                    </tr>
-                    <tr>
-                        <th colspan="6">
-                            <h1 style="color: #dc3545;">DEEPAK PRINTERS</h1>
-                        </th>
-                    </tr>
-                    <tr>
-                        <th colspan="6">Deals in: All Types of Printing Works and Digital Colour Printout</th>
-                    </tr>
-                    <tr>
-                        <td class="text-center" colspan="6">OPP. SBI BANK, JAGATPURA, JAIPUR-302017</td>
-                    </tr>
-                    <tr>
-                        <td style='padding-bottom: 25x;' class="text-center" colspan="6">Email : deepakprinters.jpr@gmail.com</td>
-                    </tr>
-                    <tr>
-                        <td><label for="invoiceNo">Invoice No.</label></td>
-                        <td colspan="3"><?php echo $invoiceNo; ?></td>
-                        <td><label for="date">Date</label></td>
-                        <td><?php echo $date; ?></td>
-                    </tr>
-                    <tr>
-                        <td><label for="partyName">Name of Party</label></td>
-                        <td colspan="3"><?php echo $partyName; ?></td>
-                        <td><label for="GST_PAN">GST/PAN</label></td>
-                        <td><?php echo $GST_PAN; ?></td>
-                    </tr>
-                    <tr>
-                        <td><label for="address">Address</label></td>
-                        <td colspan="3"><?php echo $address; ?></td>
-                        <td><label for="number">Mobile No.</label></td>
-                        <td><?php echo $number; ?></td>
-                    </tr>
-                </table>
-                <br>
-                <table id="completeHeight">
-                    <tr>
-                        <th style="width: 10%;">S. No.</th>
-                        <th>Description</th>
-                        <th style="width: 15%;">Qty.</th>
-                        <th style="width: 15%;">Rate</th>
-                        <th style="width: 20%;">Amount Rs.</th>
-                    </tr>
-                    <?php
-                    $sql2 = "SELECT * FROM invoice WHERE invoiceNo = '$invoiceNo'";
-                    $result2 = $conn->query($sql2);
-                    if ($result2->num_rows > 0) {
-                        $count = 0;
-                        while ($row2 = $result2->fetch_assoc()) {
-                            $count++;
-                            echo "<tr>";
-                            echo "<td class='text-center'>" . $row2['SNo'] . "</td>";
-                            echo "<td>" . $row2['description'] . "</td>";
-                            echo "<td class='text-center'>" . $row2['qty'] . "</td>";
-                            echo "<td class='text-center'>" . $row2['rate'] . "</td>";
-                            echo "<td class='text-end' style='padding-right: 20px'>" . $row2['amount'] . "</td>";
-                            echo "</tr>";
-                        }
-                    }
-                    while ($count < 15) {
-                        $count++;
-                        echo "<tr>";
-                        echo "<td style='padding-top: 13px; padding-bottom: 14x;'></td>";
-                        echo "<td></td>";
-                        echo "<td></td>";
-                        echo "<td></td>";
-                        echo "<td></td>";
-                        echo "</tr>";
-                    }
-                    ?>
-
-                    <tr id="lastRow">
-                        <th style="background: transparent;" colspan="4" class="text-end">Total Amount</th>
-                        <th id="totalAmount" class='text-end' style='padding-right: 20px; background: transparent;'><?php echo $TotalAmount; ?></th>
-                    </tr>
-                </table>
-                <br>
-                <table id="footer">
-                    <tr>
-                        <td style="padding-bottom: 25px;" colspan="5" id="totalAmountWords">Rs. (in words): <?php echo $amountWord; ?></td>
-                    </tr>
-                    <tr></tr>
-                    <tr>
-                        <td colspan="4"><b>Terms and Conditions:</b></td>
-                        <td class="text-end" style="color: #dc3545;">For: <b>Deepak Printers</b></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4">1. All subject to Jaipur jurisdiction only.</td>
-                        <td></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4">2. Goods once sold will not be taken back.</td>
-                        <td></td>
-                    </tr>
-
-                    <tr>
-                        <td colspan="4">3. E. & O.E.</td>
-                        <td class="text-end">Authorised Signature</td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td style="font-size: small;" colspan="5" class="text-center">This Invoice is computer generated, no signature required</td>
-                    </tr>
-                </table>
-            </td> -->
-        </tr>
-    </table>
+            <?php
+                    $count++;
+                }
+            }
+            for ($i = $count; $i <= 14; $i++) {
+            ?>
+                <tr class="<?php if ($i != 14) { ?>border-none-invoice<?php } ?>">
+                    <td><?php echo " "; ?></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            <?php
+            }
+            ?>
+            <tr class="p-0">
+                <td class="fw-bold text-center py-0" style="font-size: small;" colspan="2">COMPOSITION SCHEME UNDER GST</td>
+                <td class="py-0" rowspan="2" style="font-size: smaller;">
+                    <span class="fw-bold">BANK DETAILS</span><br>
+                    State Bank of India <br>
+                    A/c No: 42626370707 <br>
+                    IFSC: SBIN0031798
+                </td>
+                <td class="fw-bold text-center py-0">Total</td>
+                <td class="text-end py-0"><?php echo $TotalAmount; ?></td>
+            </tr>
+            <tr>
+                <td class="py-0" colspan="2" style="text-align: justify;">Rs. (in words): <?php echo $amountWord; ?></td>
+                <td class="py-0" colspan="2" style="text-align: justify;">Certified that the above mentioned details are true & correct</td>
+            </tr>
+        </table>
+        <table class="table no-border">
+            <tr>
+                <td class="py-0">Terms and Conditions:</td>
+                <td class="text-end text-danger py-0">For: <span class="fw-bold">DEEPAK PRINTERS</span></td>
+            </tr>
+            <tr>
+                <td class="py-0">1. All subject to Jaipur jurisdiction only.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="py-0">2. Goods once sold will not be taken back.</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td class="py-0">3. E. & O.E.</td>
+                <td class="text-end py-0">Authorised Signature</td>
+            </tr>
+        </table>
+    </div>
 </body>
 
 </html>
 <?php
 $html = ob_get_clean();
-$mpdf->WriteHTML($html);
-$mpdf->Output($invoiceNo . '.pdf', 'I');
+$dompdf->loadHtml($html);
+
+// (Optional) Setup the paper size and orientation
+$dompdf->setPaper('A4', 'portrait');
+
+// Render the HTML as PDF
+$dompdf->render();
+
+// Output the generated PDF to Browser
+$fileName = str_replace("/", "-", $invoiceNo);
+$dompdf->stream("$fileName.pdf", ["Attachment" => true]);
+exit;
 ?>

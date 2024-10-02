@@ -121,12 +121,90 @@
                     $result = $conn->execute_query($query);
                     $data = [];
                     while ($row = $result->fetch_assoc()) {
-                        $data[] = $row;
+                        $data[] = $row['name'];
                     }
                     ?>
                     <script>
-                        let partyData = <?php echo json_encode($data); ?>;
-                        let partyName = partyData.map(item => item.name);
+                        const partyData = <?php echo json_encode($data); ?>;
+
+                        function autocompleteName(input, arr) {
+                            let currentFocus;
+
+                            input.addEventListener("input", function() {
+                                let a, b, i, val = this.value;
+                                closeAllLists();
+                                if (!val) return false;
+
+                                currentFocus = -1;
+                                a = document.createElement("DIV");
+                                a.setAttribute("id", this.id + "autocompleteName-list");
+                                a.setAttribute("class", "autocompleteName-items");
+                                this.parentNode.appendChild(a);
+
+                                for (i = 0; i < arr.length; i++) {
+                                    if (arr[i].toUpperCase().includes(val.toUpperCase())) {
+                                        b = document.createElement("DIV");
+                                        b.innerHTML = arr[i].replace(new RegExp(`(${val})`, 'i'), "<strong>$1</strong>");
+                                        b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                                        b.addEventListener("click", function() {
+                                            input.value = this.getElementsByTagName("input")[0].value;
+                                            closeAllLists();
+                                        });
+                                        a.appendChild(b);
+                                    }
+                                }
+                                const x = document.getElementById(this.id + "autocompleteName-list");
+                                const items = x.getElementsByTagName("div");
+                                currentFocus++;
+                                addActive(items);
+                            });
+
+                            input.addEventListener("keydown", function(e) {
+                                const x = document.getElementById(this.id + "autocompleteName-list");
+                                if (x) {
+                                    const items = x.getElementsByTagName("div");
+                                    if (e.keyCode == 40) {
+                                        currentFocus++;
+                                        addActive(items);
+                                    } else if (e.keyCode == 38) {
+                                        currentFocus--;
+                                        addActive(items);
+                                    } else if (e.keyCode == 13) {
+                                        e.preventDefault();
+                                        if (currentFocus > -1 && items) items[currentFocus].click();
+                                    }
+                                }
+                            });
+
+                            function addActive(items) {
+                                if (!items) return;
+                                removeActive(items);
+                                if (currentFocus >= items.length) currentFocus = 0;
+                                if (currentFocus < 0) currentFocus = items.length - 1;
+                                items[currentFocus].classList.add("autocompleteName-active");
+                            }
+
+                            function removeActive(items) {
+                                for (const item of items) {
+                                    item.classList.remove("autocompleteName-active");
+                                }
+                            }
+
+                            function closeAllLists(elmnt) {
+                                const items = document.getElementsByClassName("autocompleteName-items");
+                                for (let i = 0; i < items.length; i++) {
+                                    if (elmnt != items[i] && elmnt != input) {
+                                        items[i].parentNode.removeChild(items[i]);
+                                    }
+                                }
+                            }
+
+                            document.addEventListener("click", function(e) {
+                                closeAllLists(e.target);
+                            });
+                        }
+
+                        autocompleteName(document.getElementById("partyName"), partyData);
                     </script>
                 </div>
                 <div class="col-md-3">
@@ -236,97 +314,9 @@
                 </div>
             </div>
         </form>
-        <script>
-            function autocompleteName(inp, arr) {
-                var currentFocus;
-                inp.addEventListener("input", function(e) {
-                    var a, b, i, val = this.value;
-                    closeAllLists();
-                    if (!val) {
-                        return false;
-                    }
-                    currentFocus = -1;
-                    a = document.createElement("DIV");
-                    a.setAttribute("id", this.id + "autocompleteName-list");
-                    a.setAttribute("class", "autocompleteName-items");
-                    this.parentNode.appendChild(a);
-                    for (i = 0; i < arr.length; i++) {
-                        let index = arr[i].indexOf(val.toUpperCase());
-                        if (index > -1) {
-                            b = document.createElement("DIV");
-                            b.innerHTML = arr[i].substr(0, index);
-                            b.innerHTML += "<strong>" + arr[i].substr(index, val.length) + "</strong>";
-                            b.innerHTML += arr[i].substr(index + val.length);
-                            b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                            b.addEventListener("click", function(e) {
-                                inp.value = this.getElementsByTagName("input")[0].value;
-                                closeAllLists();
-                            });
-                            a.appendChild(b);
-                        }
-                    }
-                    var x = document.getElementById(this.id + "autocompleteName-list");
-                    if (x) x = x.getElementsByTagName("div");
-                    currentFocus++;
-                    addActive(x);
-                });
-
-                inp.addEventListener("keydown", function(e) {
-                    var x = document.getElementById(this.id + "autocompleteName-list");
-                    if (x) x = x.getElementsByTagName("div");
-                    if (e.keyCode == 40) {
-                        currentFocus++;
-                        addActive(x);
-                    } else if (e.keyCode == 38) { //up
-                        currentFocus--;
-                        addActive(x);
-                    } else if (e.keyCode == 13) {
-                        e.preventDefault();
-                        if (currentFocus > -1) {
-                            if (x) x[currentFocus].click();
-                        }
-                    }
-                });
-
-                function addActive(x) {
-                    if (!x) return false;
-                    removeActive(x);
-                    if (currentFocus >= x.length) currentFocus = 0;
-                    x[currentFocus].classList.add("autocompleteName-active");
-                }
-
-                function removeActive(x) {
-                    for (var i = 0; i < x.length; i++) {
-                        x[i].classList.remove("autocompleteName-active");
-                    }
-                }
-
-                function closeAllLists(elmnt) {
-                    var x = document.getElementsByClassName("autocompleteName-items");
-                    for (var i = 0; i < x.length; i++) {
-                        if (elmnt != x[i] && elmnt != inp) {
-                            x[i].parentNode.removeChild(x[i]);
-                        }
-                    }
-                }
-                document.addEventListener("click", function(e) {
-                    closeAllLists(e.target);
-                });
-            }
-            autocompleteName(document.getElementById("partyName"), partyName);
-        </script>
         <div class="table-responsive">
             <table class="table table-bordered my-5">
                 <tr>
-                    <!-- <th style="width: 10%;">Invoice No</th>
-                <th>Name</th>
-                <th style="width: 10%;">Amount</th>
-                <th style="width: 10%;">Payment Mode</th>
-                <th style="width: 10%;">Amount Received</th>
-                <th style="width: 8%;">Date of Payment</th>
-                <th>Discount</th>
-                <th>Remark</th>
-                <th style="width: 8%;">Action</th> -->
                     <th class="bg-light">Invoice No</th>
                     <th class="bg-light">Name</th>
                     <th class="bg-light">Amount</th>
@@ -342,12 +332,9 @@
                     if (isset($_POST['invoiceNo']) && $_POST['invoiceNo'] != "") {
                         $invoiceNo = $_POST['invoiceNo'];
                         $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
-                    } else if (isset($_POST['partyId']) && $_POST['partyId'] != "") {
-                        $partyId = $_POST['partyId'];
-                        $sql = "SELECT * FROM invoicetotal WHERE partyId = '$partyId'";
                     } else if (isset($_POST['partyName']) && $_POST['partyName'] != "") {
                         $partyName = $_POST['partyName'];
-                        $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName'";
+                        $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName' AND `amount` <> `amountReceived` - `discount`;";
                     } else {
                         exit;
                     }

@@ -8,7 +8,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $partyId = $_POST['partyId'];
     $partyName = $_POST['partyName'];
-    $number = $_POST['number'];
+    $partyName = str_replace(" ($partyId)", "", $partyName);
+    $address = $_POST['address'];
+    $GST_PAN = $_POST['GST_PAN'];
     $date = $_POST['date'];
     $TotalAmount = $_POST['total_amt'];
     $amountWord = $_POST['total_amt_words'];
@@ -25,8 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
     if ($_POST['submit'] == 'Save') {
         $conn->execute_query("INSERT INTO `invoicetotal`
-        (`invoiceNo`, `partyId`, `partyName`, `number`, `date`, `amount`, `amountWord`, `paymentMode`) VALUES 
-        ('$invoiceNo','$partyId', '$partyName', '$number','$date','$TotalAmount', '$amountWord', '')");
+        (`invoiceNo`, `partyId`, `partyName`, `address`, `gst`, `date`, `amount`, `amountWord`, `paymentMode`) VALUES 
+        ('$invoiceNo','$partyId', '$partyName', '$address', '$GST_PAN','$date','$TotalAmount', '$amountWord', '')");
         echo "<script>alert('Invoice Created Successfully');</script>";
         echo "<script>window.location.href='invoiceCreate';</script>";
     } else if ($_POST['submit'] == 'Print') {
