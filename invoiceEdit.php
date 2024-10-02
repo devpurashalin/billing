@@ -262,6 +262,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
 
         function addRow() {
+            if (count == 14) {
+                alert('Maximum 14 rows allowed');
+                return;
+            }
             if (isCurrentRowFilled()) {
                 count++;
                 let table = document.getElementById("invoiceTable");

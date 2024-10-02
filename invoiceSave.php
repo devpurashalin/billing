@@ -33,12 +33,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<script>window.location.href='invoiceCreate';</script>";
     } else if ($_POST['submit'] == 'Print') {
         $conn->execute_query("INSERT INTO `invoicetotal`
-        (`invoiceNo`, `partyId`, `partyName`, `number`, `date`, `amount`, `amountWord`, `paymentMode`) VALUES 
-        ('$invoiceNo','$partyId', '$partyName', '$number','$date','$TotalAmount', '$amountWord', '')");
+        (`invoiceNo`, `partyId`, `partyName`, `address`, `gst`, `date`, `amount`, `amountWord`, `paymentMode`) VALUES 
+        ('$invoiceNo','$partyId', '$partyName', '$address', '$GST_PAN','$date','$TotalAmount', '$amountWord', '')");
         
         header("Location: invoiceView?invoiceNo=$invoiceNo");
     } else if ($_POST['submit'] == 'Update') {
-        $conn->execute_query("UPDATE `invoicetotal` SET `partyId` = '$partyId', `partyName` = '$partyName', `number` = '$number', `date` = '$date', `amount` = '$TotalAmount', `amountWord` = '$amountWord' WHERE `invoiceNo` = '$invoiceNo';");
+        $conn->execute_query("UPDATE `invoicetotal` SET `partyId` = '$partyId', `partyName` = '$partyName', `gst` = '$GST_PAN', `address` = '$address', `date` = '$date', `amount` = '$TotalAmount', `amountWord` = '$amountWord' WHERE `invoiceNo` = '$invoiceNo';");
         echo "<script>alert('Invoice Updated Successfully');</script>";
         echo "<script>window.location.href='invoiceView?invoiceNo=$invoiceNo';</script>";
     }

@@ -225,6 +225,10 @@ date_default_timezone_set('Asia/Kolkata');
         let count = 1;
 
         function addRow() {
+            if (count == 14) {
+                alert('Maximum 14 rows allowed');
+                return;
+            }
             if (isCurrentRowFilled()) {
                 count++;
                 let table = document.getElementById("invoiceTable");

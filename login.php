@@ -26,6 +26,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         exit();
     } else {
         // Login failed
+        echo $pwd;
         echo 'Invalid username or password';
     }
 }

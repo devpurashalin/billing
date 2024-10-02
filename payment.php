@@ -334,7 +334,7 @@
                         $sql = "SELECT * FROM invoicetotal WHERE invoiceNo = '$invoiceNo'";
                     } else if (isset($_POST['partyName']) && $_POST['partyName'] != "") {
                         $partyName = $_POST['partyName'];
-                        $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName' AND `amount` <> `amountReceived` - `discount`;";
+                        $sql = "SELECT * FROM invoicetotal WHERE partyName = '$partyName' AND `amount` <> `amountReceived` + `discount`;";
                     } else {
                         exit;
                     }
