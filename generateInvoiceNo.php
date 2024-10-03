@@ -40,6 +40,7 @@ function generateInvoiceNumber($conn, $date)
     $newSerial = $maxSerial ? $maxSerial + 1 : 1;
 
     // Generate the new invoice number
+    $newSerial = sprintf("%03d", $newSerial);
     $invoiceNo = "DP/$financialYear/$newSerial";
 
     return $invoiceNo;
