@@ -29,17 +29,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $conn->execute_query("INSERT INTO `invoicetotal`
         (`invoiceNo`, `partyId`, `partyName`, `address`, `gst`, `date`, `amount`, `amountWord`, `paymentMode`) VALUES 
         ('$invoiceNo','$partyId', '$partyName', '$address', '$GST_PAN','$date','$TotalAmount', '$amountWord', '')");
-        echo "<script>alert('Invoice Created Successfully');</script>";
-        echo "<script>window.location.href='invoiceCreate';</script>";
+        $_SESSION['message'] = "Invoice Created Successfully";
+        header('Location: invoiceCreate');
     } else if ($_POST['submit'] == 'Print') {
         $conn->execute_query("INSERT INTO `invoicetotal`
         (`invoiceNo`, `partyId`, `partyName`, `address`, `gst`, `date`, `amount`, `amountWord`, `paymentMode`) VALUES 
         ('$invoiceNo','$partyId', '$partyName', '$address', '$GST_PAN','$date','$TotalAmount', '$amountWord', '')");
-        
+        $_SESSION['message'] = "Invoice Created Successfully";
         header("Location: invoiceView?invoiceNo=$invoiceNo");
     } else if ($_POST['submit'] == 'Update') {
         $conn->execute_query("UPDATE `invoicetotal` SET `partyId` = '$partyId', `partyName` = '$partyName', `gst` = '$GST_PAN', `address` = '$address', `date` = '$date', `amount` = '$TotalAmount', `amountWord` = '$amountWord' WHERE `invoiceNo` = '$invoiceNo';");
-        echo "<script>alert('Invoice Updated Successfully');</script>";
-        echo "<script>window.location.href='invoiceView?invoiceNo=$invoiceNo';</script>";
+        $_SESSION['message'] = "Invoice Updated Successfully";
+        header("Location: invoiceView?invoiceNo=$invoiceNo");
     }
 }

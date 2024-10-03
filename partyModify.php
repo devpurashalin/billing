@@ -9,14 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $GST_PAN = $_POST['GST_PAN'];
     if ($_POST['submit'] == "add") {
         $sql = "INSERT INTO party (ID, name, address, number, email, GST_PAN, status) VALUES ('$ID', '$name', '$address', '$number', '$email', '$GST_PAN', 'ACTIVE')";
+        $_SESSION['message'] = "New record created successfully";
     } else if ($_POST['submit'] == "edit") {
         $sql = "UPDATE party SET name = '$name', address = '$address', number = '$number', email = '$email', GST_PAN = '$GST_PAN' WHERE ID = '$ID'";
+        $_SESSION['message'] = "Record updated successfully";
     }
     if (mysqli_query($conn, $sql)) {
-        echo "<script>
-                alert('New record created successfully');
-                window.location.href = 'partyList';
-              </script>";
+        header('Location: partyList');
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }

@@ -7,8 +7,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $sql = "UPDATE $table SET value='$edit' WHERE value='$id'";
     $result = $conn->query($sql);
     if ($result) {
-        echo '<script>alert("Edited Successfully")</script>';
-        echo '<script>window.location.href="addOptions.php"</script>';
+        $_SESSION['message'] = "Edited Successfully";
+        header('Location: addOptions.php');
     } else {
         echo "Error: " . $conn->error;
     }

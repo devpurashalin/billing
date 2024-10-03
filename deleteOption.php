@@ -6,8 +6,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     $sql = "DELETE FROM $table WHERE value='$id'";
     $result = $conn->query($sql);
     if ($result) {
-        echo '<script>alert("Deleted Successfully")</script>';
-        echo '<script>window.location.href="addOptions.php"</script>';
+        $_SESSION['message'] = "Option Deleted Successfully";
+        header('Location: addOptions.php');
     } else {
         echo "Error: " . $conn->error;
     }

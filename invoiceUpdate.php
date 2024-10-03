@@ -1,4 +1,7 @@
 <?php
+
+use FontLib\Table\Type\head;
+
 include "db.php";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $invoiceNo = $_POST['invoiceNo'];
@@ -20,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php
         exit;
     }
-    
+
     $sql = "UPDATE invoicetotal SET 
                 paymentMode = '$paymentMode', 
                 amountReceived = '$amountReceived',
@@ -29,12 +32,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 discount = '$discount'
             WHERE invoiceNo = '$invoiceNo'";
     if ($conn->query($sql) === TRUE) {
-?>
-        <script>
-            alert('Record updated successfully');
-            window.location.href = 'payment';
-        </script>
-<?php
+        $_SESSION['message'] = "Record updated successfully";
+        header('Location: payment');
     } else {
         echo "Error updating record: " . $conn->error;
     }

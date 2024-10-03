@@ -7,9 +7,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "INSERT INTO $addingFor (value) VALUES ('$content')";
         try {
             $conn->query($sql);
-            echo "<script>alert('$content added successfully to $addingFor')</script>";
+            $_SESSION['message'] = "$content added successfully to $addingFor";
         } catch (Exception $e) {
-            echo '<script>alert("Error: ' . $e->getMessage() . '");</script>';
+            $_SESSION['error'] = "Error: " . $e->getMessage();
         }
     }
 }
