@@ -84,3 +84,7 @@ if (isset($_SESSION['error'])) {
 <?php
 }
 ?>
+
+<button class="btn btn-primary rounded-circle" id="scrollTopBtn">^</button>
+
+<script src="script.js"></script>
