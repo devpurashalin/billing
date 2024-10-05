@@ -37,9 +37,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="invoiceCreate">Create Invoice</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link" href="invoicesAll">Invoice Report</a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a class="nav-link" href="report">Report</a>
                 </li>

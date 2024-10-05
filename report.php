@@ -18,31 +18,33 @@
 <body>
     <?php include "navbar.php"; ?>
     <div class="container my-5">
-        <form action="report" method="post">
-            <div class="row">
-                <div class="col">
-                    <label for="datefrom">Date from</label>
-                    <input class="form-control" type="date" name="datefrom" id="datefrom">
-                </div>
-                <div class="col">
-                    <label for="dateto">Date to</label>
-                    <input class="form-control" type="date" name="dateto" id="dateto">
-                </div>
-                <div class="col">
-                    <br>
-                    <button class="btn btn-primary">Submit</button>
-                </div>
-            </div>
-        </form>
+
     </div>
     <div class="container my-5">
         <div class="container mb-3 row">
-            <div class="col-md col-0">
-                <!-- <button class="btn btn-dark" onclick="CSVConvert()">Download as CSV</button> -->
-                <button class="btn btn-dark" onclick="ExcelConvert()">Download as Excel</button>
-            </div>
-            <div class="col-md-4">
-                <input class="form-control" onkeyup="search(this);" type="text" id="searchInput" placeholder="Search">
+            <form class="form col-12 col-lg-7 row" action="report" method="post">
+                <div class="col-12 col-md-4">
+                    <label for="datefrom">Date from</label>
+                    <input class="form-control" type="date" name="datefrom" id="datefrom">
+                </div>
+                <div class="col-12 col-md-4">
+                    <label for="dateto">Date to</label>
+                    <input class="form-control" type="date" name="dateto" id="dateto">
+                </div>
+                <div class="col-12 col-md-4">
+                    <br>
+                    <button class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+            <div class="col-12 col-lg-5 row">
+                <div class="col-md-7">
+                    <br>
+                    <button class="btn btn-dark" onclick="ExcelConvert()">Download as Excel</button>
+                </div>
+                <div class="col-md-5">
+                    <br>
+                    <input class="form-control" onkeyup="search(this);" type="text" id="searchInput" placeholder="Search">
+                </div>
             </div>
         </div>
         <div class="table-responsive">
