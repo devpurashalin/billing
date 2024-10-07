@@ -41,7 +41,7 @@
                     <a class="nav-link" href="invoicesAll">Invoice Report</a>
                 </li> -->
                 <li class="nav-item">
-                    <a class="nav-link" href="report">Report</a>
+                    <a class="nav-link" href="report">Invoice Report</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="payment">Payment Received</a>
