@@ -93,7 +93,7 @@ if ($result->num_rows > 0) {
                     <br>
                     <input class="form-control" onkeyup="search(this);" type="text" id="searchInput" placeholder="Search">
                 </div>
-            </div>
+            </div>git 
         </div>
         <script>
             document.getElementById('datefrom').value = "<?php echo htmlspecialchars($datefrom, ENT_QUOTES, 'UTF-8'); ?>";
