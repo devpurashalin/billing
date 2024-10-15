@@ -61,7 +61,7 @@
 <?php
 if (isset($_SESSION['message'])) {
 ?>
-    <div class="container mt-5">
+    <div class="container mt-5 d-print-none">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             <strong>Success</strong> <?php echo $_SESSION['message']; ?>.
             <?php unset($_SESSION['message']); ?>
@@ -74,7 +74,7 @@ if (isset($_SESSION['message'])) {
 <?php
 if (isset($_SESSION['error'])) {
 ?>
-    <div class="container mt-5">
+    <div class="container mt-5 d-print-none">
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             <strong>Error</strong> <?php echo $_SESSION['error']; ?>.
             <?php unset($_SESSION['error']); ?>
@@ -85,6 +85,6 @@ if (isset($_SESSION['error'])) {
 }
 ?>
 
-<button class="btn btn-primary rounded-circle" id="scrollTopBtn">^</button>
+<button class="d-print-none btn btn-primary rounded-circle" id="scrollTopBtn">^</button>
 
 <script src="script.js"></script>

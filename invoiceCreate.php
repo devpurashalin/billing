@@ -66,7 +66,7 @@ date_default_timezone_set('Asia/Kolkata');
                                 <br>
                                 <u>Bill of Supply</u>
                             </div>
-                            <div class="text-end">Mob: 9414060621<br>9887111141</div>
+                            <div class="text-end">Mob: 9887111141</div>
                         </div>
                     </td>
                 </tr>
@@ -226,8 +226,8 @@ date_default_timezone_set('Asia/Kolkata');
         let count = 1;
 
         function addRow() {
-            if (count == 14) {
-                alert('Maximum 14 rows allowed');
+            if (count == 10) {
+                alert('Maximum 10 rows allowed');
                 return;
             }
             if (isCurrentRowFilled()) {

@@ -83,7 +83,7 @@ if ($result->num_rows > 0) {
                 <div class="text-center col">
                     श्री गणेशाय नमः
                 </div>
-                <div class="text-end col">Mob: 9414060621<br>9887111141</div>
+                <div class="text-end col">Mob: 9887111141</div>
             </div>
             <div class="h5 text-center text-decoration-underline">BILL OF SUPPLY</div>
             <div class="text-center text-danger h2 py-0" colspan="5">DEEPAK PRINTERS</div>
@@ -148,7 +148,7 @@ if ($result->num_rows > 0) {
                     $count++;
                 }
             }
-            for ($i = $count; $i <= 14; $i++) {
+            for ($i = $count; $i <= 10; $i++) {
             ?>
                 <tr class="<?php if ($i != 14) { ?>border-none-invoice<?php } ?>">
                     <td class="text-center py-custom-1"><?php echo " "; ?></td>

@@ -135,7 +135,7 @@ ob_start();
                 <tr>
                     <td style="width: 33%; border: 0;">GSTIN: 08AWGPD7728Q1ZV<br> State: Rajasthan</td>
                     <td style="width: 34%; border: 0;" class="text-center"><img src="<?php echo $src; ?>" alt="Not Found"></td>
-                    <td style="width: 33%; border: 0;" class="text-end">Mob: 9414060621<br>9887111141</td>
+                    <td style="width: 33%; border: 0;" class="text-end">Mob: 9887111141</td>
                 </tr>
             </table>
             <div class="h5 text-center"><b><u>BILL OF SUPPLY</u></b></div>
@@ -203,7 +203,7 @@ ob_start();
                     $count++;
                 }
             }
-            for ($i = $count; $i <= 14; $i++) {
+            for ($i = $count; $i <= 10; $i++) {
             ?>
                 <tr class="<?php if ($i != 14) { ?>border-none-invoice<?php } ?>">
                     <td><?php echo " "; ?></td>
