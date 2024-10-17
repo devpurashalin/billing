@@ -56,7 +56,7 @@
             </thead>
             <tbody>
                 <?php
-                $sql = "SELECT * FROM party WHERE status != 'DELETED'";
+                $sql = "SELECT * FROM party WHERE status != 'DELETED' ORDER BY `name`";
                 $result = $conn->query($sql);
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {

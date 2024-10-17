@@ -69,19 +69,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="h5 text-center">Invoice Item</div>
                 <table class="table table-bordered">
                     <?php
-                    $sql = "SELECT * FROM invoiceitem";
+                    $sql = "SELECT * FROM `invoiceitem` ORDER BY `value` ASC";
                     $result = $conn->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<tr><td>{$row['value']}</td>";
                     ?>
-                        <td class="d-flex">
-                            <i class="fas fa-edit text-primary" onclick="edit('<?php echo $row['value']; ?>', 'invoiceitem')"></i>
-                        </td>
-                        <td>
-                            <a href="deleteOption.php?table=invoiceitem&id=<?php echo $row['value']; ?>">
-                                <i class="fas fa-trash text-danger"></i>
-                            </a>
-                        </td>
+                        <tr>
+                            <td><?php echo $row['value']; ?></td>
+                            <td class="d-flex">
+                                <i class="fas fa-edit text-primary" onclick="edit('<?php echo $row['value']; ?>', 'invoiceitem')"></i>
+                            </td>
+                            <td>
+                                <a href="deleteOption.php?table=invoiceitem&id=<?php echo $row['value']; ?>">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </a>
+                            </td>
                         </tr>
                     <?php
                     }
@@ -92,19 +93,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="text-center h5">Payment Mode</div>
                 <table class="table table-bordered border-warning">
                     <?php
-                    $sql = "SELECT * FROM paymentmode";
+                    $sql = "SELECT * FROM `paymentmode` ORDER BY `value` ASC";
                     $result = $conn->query($sql);
                     while ($row = $result->fetch_assoc()) {
-                        echo "<tr><td>{$row['value']}</td>";
                     ?>
-                        <td class="d-flex">
-                            <i onclick="edit('<?php echo $row['value']; ?>', 'paymentmode')" class="fas fa-edit text-primary"></i>
-                        </td>
-                        <td>
-                            <a href="deleteOption.php?table=paymentmode&id=<?php echo $row['value']; ?>">
-                                <i class="fas fa-trash text-danger"></i>
-                            </a>
-                        </td>
+                        <tr>
+                            <td><?php echo $row['value']; ?></td>
+                            <td class="d-flex">
+                                <i onclick="edit('<?php echo $row['value']; ?>', 'paymentmode')" class="fas fa-edit text-primary"></i>
+                            </td>
+                            <td>
+                                <a href="deleteOption.php?table=paymentmode&id=<?php echo $row['value']; ?>">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </a>
+                            </td>
                         </tr>
                     <?php
                     }
