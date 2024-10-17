@@ -14,6 +14,7 @@ if ($result->num_rows > 0) {
     $gst = $row['gst'];
     $address = $row['address'];
     $date = $row['date'];
+    $poOrder = $row['poOrder'];
     $amountWord = $row['amountWord'];
     $TotalAmount = $row['amount'];
 } else {
@@ -114,7 +115,9 @@ if ($result->num_rows > 0) {
                         <div class="col-5 px-0">Invoice No:</div>
                         <div class="col-7 px-0"><?php echo $invoiceNo; ?></div>
                     </div>
-                    <div style="height: 24px;">
+                    <div class="row">
+                        <div class="col-5 px-0">PO Order</div>
+                        <div class="col-7 px-0"><?php echo $poOrder; ?></div>
                     </div>
                     <div class="row">
                         <div class="col-5 px-0">Date:</div>

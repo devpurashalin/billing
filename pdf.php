@@ -15,6 +15,7 @@ if ($result->num_rows > 0) {
     $gst = $row['gst'];
     $address = $row['address'];
     $date = $row['date'];
+    $poOrder = $row['poOrder'];
     $amountWord = $row['amountWord'];
     $TotalAmount = $row['amount'];
 } else {
@@ -151,7 +152,7 @@ ob_start();
                 <td colspan="3">
                     <table class="no-border p-0 m-0">
                         <tr class="p-0">
-                            <td style="width: 30%;" class="p-0">Name of Party:</td>
+                            <td valign="top" style="width: 30%;" class="p-0">Name of Party:</td>
                             <td style="width: 70%;" class="p-0"><?php echo $partyName; ?></td>
                         </tr>
                         <tr class="p-0">
@@ -164,11 +165,15 @@ ob_start();
                         </tr>
                     </table>
                 </td>
-                <td colspan="2">
-                    <table class="no-border p-0">
+                <td colspan="2" valign="top">
+                    <table class="no-border p-0 m-0">
                         <tr class="p-0">
                             <td style="width: 35%;" class="p-0">Invoice No:</td>
                             <td style="width: 65%;" class="p-0"><?php echo $invoiceNo; ?></td>
+                        </tr>
+                        <tr class="p-0">
+                            <td class="p-0">PO Order</td>
+                            <td class="p-0"><?php echo $poOrder; ?></td>
                         </tr>
                         <tr class="p-0">
                             <td class="p-0">Date:</td>

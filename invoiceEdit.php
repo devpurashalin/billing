@@ -134,8 +134,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <tr>
                     <td class="text-end"><label for="address">Address</label></td>
                     <td colspan="2"><input required class="form-control" type="text" name="address" id="address"></td>
-                    <td></td>
-                    <td></td>
+                    <td class="text-end">PO Order</td>
+                    <td><input class="form-control" type="text" name="poOrder" id="poOrder"></td>
                 </tr>
                 <tr>
                     <td class="text-end"><label for="GST_PAN">GST/PAN</label></td>
