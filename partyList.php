@@ -1,6 +1,24 @@
 <?php
 include 'db.php';
+$sql = "SELECT * FROM `party` WHERE status != 'DELETED' ORDER BY `createdAt`";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    $data = array();
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+    echo "<script>const data = " . json_encode($data) . ";</script>";
+}
 ?>
+<script>
+    data.forEach(item => {
+        Object.keys(item).forEach(key => {
+            if (item[key] === null) {
+                item[key] = "";
+            }
+        });
+    });
+</script>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,6 +33,13 @@ include 'db.php';
         #partyForm tr,
         #partyForm td {
             border: 0px !important;
+        }
+
+        .page-link:hover {
+            cursor: pointer;
+            background-color: gray;
+            font-weight: bold;
+            color: white;
         }
 
         .excel:hover {
@@ -102,32 +127,11 @@ include 'db.php';
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $sql = "SELECT * FROM party WHERE status != 'DELETED'";
-                $result = mysqli_query($conn, $sql);
-                if (mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['ID'] . "</td>";
-                        echo "<td>" . $row['name'] . "</td>";
-                        echo "<td>" . $row['address'] . "</td>";
-                        echo "<td>" . $row['number'] . "</td>";
-                        echo "<td>" . $row['email'] . "</td>";
-                        echo "<td>" . $row['GST_PAN'] . "</td>";
-                        echo "<td><a class='text-primary' href='partyModify.php?id=" . $row['ID'] . "&action=edit'><i class='fa fa-edit'></i></a>";
-                        echo '<td><i style="cursor: pointer;" class="fa fa-trash text-danger" onclick="deleteConfirm(\'' . $row['ID'] . '\')"></i>';
-                        if ($row['status'] == 'ACTIVE') {
-                            echo '<td><a class="text-success" href="partyModify.php?id=' . $row['ID'] . '&action=INACTIVE"><i class="fa fa-toggle-on"></i></a></td>';
-                        } else {
-                            echo '<td><a class="text-danger" href="partyModify.php?id=' . $row['ID'] . '&action=ACTIVE"><i class="fa fa-toggle-off"></i></a></td>';
-                        }
-                    }
-                } else {
-                    echo "<tr><td colspan='9'>No Data Found</td></tr>";
-                }
-                ?>
             </tbody>
         </table>
+        <nav>
+            <ul class="pagination" id="pagination"></ul>
+        </nav>
     </div>
     <script>
         function capitalize() {
@@ -143,27 +147,125 @@ include 'db.php';
         }
     </script>
 
-    <script>
-        function search(input) {
-            let inputValue = input.value.toLowerCase();
-            let rows = document.querySelectorAll("#partyData tbody tr");
-
-            rows.forEach(row => {
-                let rowData = row.textContent.toLowerCase();
-                if (rowData.includes(inputValue)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
-    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
+        function matchStringInArray(array, searchString) {
+            return array.filter(item => {
+                return Object.values(item).some(value =>
+                    value.toString().toLowerCase().includes(searchString.toLowerCase())
+                );
+            });
+        }
+
+        let matchedResults = matchStringInArray(data, ""); // Store the results in a variable
+
+        // Pagination variables
+        let currentPage = 1;
+        const rowsPerPage = 5;
+
+        // Function to display table rows based on the current page
+        function displayTableRows(page) {
+            const tableBody = document.querySelector("#partyData tbody");
+            tableBody.innerHTML = "";
+
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            const rows = matchedResults.slice(startIndex, endIndex);
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row.ID}</td>
+                    <td>${row.name}</td>
+                    <td>${row.address}</td>
+                    <td>${row.number}</td>
+                    <td>${row.email}</td>
+                    <td>${row.GST_PAN}</td>
+                    <td><a class="text-primary" href="partyModify.php?id=${row.ID}&action=edit"><i class="fa fa-edit"></i></a></td>
+                    <td><i style="cursor: pointer;" class="fa fa-trash text-danger" onclick="deleteConfirm('${row.ID}')"></i></td>
+                    <td>${row.status === "ACTIVE" ? `<a class="text-success" href="partyModify.php?id=${row.ID}&action=INACTIVE"><i class="fa fa-toggle-on"></i></a>` : `<a class="text-danger" href="partyModify.php?id=${row.ID}&action=ACTIVE"><i class="fa fa-toggle-off"></i></a>`}</td>
+        `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to set up pagination controls with "Next" and "Previous"
+        function setupPagination() {
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+
+            const pageCount = Math.ceil(matchedResults.length / rowsPerPage);
+
+            // Previous Button
+            const prevLi = document.createElement("li");
+            prevLi.classList.add("page-item");
+            prevLi.innerHTML = `<div class="page-link">Previous</div>`;
+            if (currentPage === 1) {
+                prevLi.classList.add("disabled");
+            }
+            prevLi.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows(currentPage);
+                    setupPagination();
+                }
+            });
+            pagination.appendChild(prevLi);
+
+            // Page Numbers
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement("li");
+                li.classList.add("page-item");
+                li.innerHTML = `<div class="page-link">${i}</div>`;
+
+                if (i === currentPage) {
+                    li.classList.add("active");
+                }
+
+                li.addEventListener("click", () => {
+                    currentPage = i;
+                    displayTableRows(currentPage);
+                    setupPagination();
+                });
+
+                pagination.appendChild(li);
+            }
+
+            // Next Button
+            const nextLi = document.createElement("li");
+            nextLi.classList.add("page-item");
+            nextLi.innerHTML = `<div class="page-link">Next</div>`;
+            if (currentPage === pageCount) {
+                nextLi.classList.add("disabled");
+            }
+            nextLi.addEventListener("click", () => {
+                if (currentPage < pageCount) {
+                    currentPage++;
+                    displayTableRows(currentPage);
+                    setupPagination();
+                }
+            });
+            pagination.appendChild(nextLi);
+        }
+
+        // Initial setup
+        displayTableRows(currentPage);
+        setupPagination();
+
+        // Search function
+        function search(input) {
+            const inputValue = input.value.toLowerCase();
+            matchedResults = matchStringInArray(data, inputValue);
+            currentPage = 1;
+            displayTableRows(currentPage);
+            setupPagination();
+        }
+
         function ExcelConvert() {
-            const table = document.getElementById('partyData');
-            const wb = XLSX.utils.table_to_book(table);
-            XLSX.writeFile(wb, 'Customers.xlsx');
+            const ws = XLSX.utils.json_to_sheet(matchedResults);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Party");
+            XLSX.writeFile(wb, "Party.xlsx");
         }
     </script>
 </body>

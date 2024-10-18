@@ -1,4 +1,43 @@
-<?php include 'db.php'; ?>
+<?php
+include 'db.php';
+$sql = "SELECT * FROM party WHERE status != 'DELETED' ORDER BY `name`";
+$result = $conn->query($sql);
+$data = array();
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $partyId = $row['ID'];
+        $partyName = $row['name'];
+        $number = $row['number'];
+        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived, SUM(discount) AS discount FROM invoicetotal WHERE partyId = '$partyId'";
+        $result1 = $conn->query($sql1);
+        $row1 = $result1->fetch_assoc();
+        $amountReceived = $row1['amountReceived'];
+        $total = $row1['total'];
+        $discount = $row1['discount'];
+        $dueAmount = $total - $amountReceived - $discount;
+        if ($dueAmount == 0) {
+            continue;
+        }
+        $data[] = array(
+            'partyId' => $partyId,
+            'partyName' => $partyName,
+            'number' => $number,
+            'dueAmount' => $dueAmount
+        );
+    }
+    echo '<script>const data = ' . json_encode($data) . ';</script>';
+}
+?>
+
+<script>
+    data.forEach(item => {
+        Object.keys(item).forEach(key => {
+            if (item[key] === null) {
+                item[key] = "";
+            }
+        });
+    });
+</script>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -15,6 +54,13 @@
                 max-width: none;
                 padding: 0;
             }
+        }
+
+        .page-link:hover {
+            cursor: pointer;
+            background-color: gray;
+            font-weight: bold;
+            color: white;
         }
 
         .excel:hover {
@@ -55,93 +101,128 @@
                 </tr>
             </thead>
             <tbody>
-                <?php
-                $sql = "SELECT * FROM party WHERE status != 'DELETED' ORDER BY `name`";
-                $result = $conn->query($sql);
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                        $partyId = $row['ID'];
-                        $partyName = $row['name'];
-                        $number = $row['number'];
-                        $sql1 = "SELECT SUM(amount) AS total, SUM(amountReceived) AS amountReceived, SUM(discount) AS discount FROM invoicetotal WHERE partyId = '$partyId'";
-                        $result1 = $conn->query($sql1);
-                        $row1 = $result1->fetch_assoc();
-                        $amountReceived = $row1['amountReceived'];
-                        $total = $row1['total'];
-                        $discount = $row1['discount'];
-                        $dueAmount = $total - $amountReceived - $discount;
-                        if ($dueAmount == 0) {
-                            continue;
-                        }
-                ?>
-                        <tr>
-                            <td><?php echo $partyId; ?></td>
-                            <td><?php echo $partyName; ?></td>
-                            <td><?php echo $number; ?></td>
-                            <td><?php echo $dueAmount; ?></td>
-                        </tr>
-                <?php
-                    }
-                }
-                ?>
             </tbody>
         </table>
+        <nav>
+            <ul class="pagination" id="pagination"></ul>
+        </nav>
     </div>
-    <script>
-        function search(input) {
-            let inputValue = input.value.toLowerCase();
-            let rows = document.querySelectorAll("#DueAmount tbody tr");
 
-            rows.forEach(row => {
-                let rowData = row.textContent.toLowerCase();
-                if (rowData.includes(inputValue)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            });
-        }
 
-        function CSVConvert() {
-            var table = document.getElementById('DueAmount');
-            var rows = table.rows;
-            var csvContent = '';
-
-            for (var i = 0; i < rows.length; i++) {
-                if (rows[i].style.display !== 'none') {
-                    var cells = rows[i].cells;
-                    for (var j = 0; j < cells.length; j++) {
-                        csvContent += cells[j].innerText + (j < cells.length - 1 ? ',' : '');
-                    }
-                    csvContent += '\n';
-                }
-            }
-
-            var blob = new Blob([csvContent], {
-                type: 'text/csv;charset=utf-8;'
-            });
-            if (navigator.msSaveBlob) {
-                navigator.msSaveBlob(blob, 'DueAmount.csv');
-            } else {
-                var link = document.createElement('a');
-                if (link.download !== undefined) {
-                    var url = URL.createObjectURL(blob);
-                    link.setAttribute('href', url);
-                    link.setAttribute('download', 'DueAmount.csv');
-                    link.style.visibility = 'hidden';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
-            }
-        }
-    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
     <script>
+        function matchStringInArray(array, searchString) {
+            return array.filter(item => {
+                return Object.values(item).some(value =>
+                    value.toString().toLowerCase().includes(searchString.toLowerCase())
+                );
+            });
+        }
+
+        let matchedResults = matchStringInArray(data, ""); // Store the results in a variable
+
+        // Pagination variables
+        let currentPage = 1;
+        const rowsPerPage = 5;
+
+        // Function to display table rows based on the current page
+        function displayTableRows(page) {
+            const tableBody = document.querySelector("#DueAmount tbody");
+            tableBody.innerHTML = "";
+
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            const rows = matchedResults.slice(startIndex, endIndex);
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row.partyId}</td>
+                    <td>${row.partyName}</td>
+                    <td>${row.number}</td>
+                    <td>${row.dueAmount}</td>
+        `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to set up pagination controls with "Next" and "Previous"
+        function setupPagination() {
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+
+            const pageCount = Math.ceil(matchedResults.length / rowsPerPage);
+
+            // Previous Button
+            const prevLi = document.createElement("li");
+            prevLi.classList.add("page-item");
+            prevLi.innerHTML = `<div class="page-link">Previous</div>`;
+            if (currentPage === 1) {
+                prevLi.classList.add("disabled");
+            }
+            prevLi.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows(currentPage);
+                    setupPagination();
+                }
+            });
+            pagination.appendChild(prevLi);
+
+            // Page Numbers
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement("li");
+                li.classList.add("page-item");
+                li.innerHTML = `<div class="page-link">${i}</div>`;
+
+                if (i === currentPage) {
+                    li.classList.add("active");
+                }
+
+                li.addEventListener("click", () => {
+                    currentPage = i;
+                    displayTableRows(currentPage);
+                    setupPagination();
+                });
+
+                pagination.appendChild(li);
+            }
+
+            // Next Button
+            const nextLi = document.createElement("li");
+            nextLi.classList.add("page-item");
+            nextLi.innerHTML = `<div class="page-link">Next</div>`;
+            if (currentPage === pageCount) {
+                nextLi.classList.add("disabled");
+            }
+            nextLi.addEventListener("click", () => {
+                if (currentPage < pageCount) {
+                    currentPage++;
+                    displayTableRows(currentPage);
+                    setupPagination();
+                }
+            });
+            pagination.appendChild(nextLi);
+        }
+
+        // Initial setup
+        displayTableRows(currentPage);
+        setupPagination();
+
+        // Search function
+        function search(input) {
+            const inputValue = input.value.toLowerCase();
+            matchedResults = matchStringInArray(data, inputValue);
+            currentPage = 1;
+            displayTableRows(currentPage);
+            setupPagination();
+        }
+
         function ExcelConvert() {
-            const table = document.getElementById('DueAmount');
-            const wb = XLSX.utils.table_to_book(table);
-            XLSX.writeFile(wb, 'Due Amount.xlsx');
+            const ws = XLSX.utils.json_to_sheet(matchedResults);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Due Amount");
+            XLSX.writeFile(wb, "Due Amount.xlsx");
         }
     </script>
 </body>

@@ -13,6 +13,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+$sql = "SELECT * FROM `invoiceitem` ORDER BY `value` ASC";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    $InvoiceItemData = array();
+    while ($row = $result->fetch_assoc()) {
+        $InvoiceItemData[] = $row;
+    }
+    echo "<script>const InvoiceItemData = " . json_encode($InvoiceItemData) . ";</script>";
+}
+$sql = "SELECT * FROM `paymentmode` ORDER BY `value` ASC";
+$result = $conn->query($sql);
+if ($result->num_rows > 0) {
+    $PaymentModeData = array();
+    while ($row = $result->fetch_assoc()) {
+        $PaymentModeData[] = $row;
+    }
+    echo "<script>const PaymentModeData = " . json_encode($PaymentModeData) . ";</script>";
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -67,36 +85,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="row ">
             <div class="col-12 col-md-6">
                 <div class="h5 text-center">Invoice Item</div>
-                <table class="table table-bordered">
-                    <?php
-                    $sql = "SELECT * FROM `invoiceitem` ORDER BY `value` ASC";
-                    $result = $conn->query($sql);
-                    while ($row = $result->fetch_assoc()) {
-                    ?>
-                        <tr>
-                            <td><?php echo $row['value']; ?></td>
-                            <td class="d-flex">
-                                <i class="fas fa-edit text-primary" onclick="edit('<?php echo $row['value']; ?>', 'invoiceitem')"></i>
-                            </td>
-                            <td>
-                                <a href="deleteOption.php?table=invoiceitem&id=<?php echo $row['value']; ?>">
-                                    <i class="fas fa-trash text-danger"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    <?php
-                    }
-                    ?>
+                <table id="invoiceitem" class="table table-bordered">
+                    <tbody></tbody>
+                    <!-- <?php
+                            $sql = "SELECT * FROM `invoiceitem` ORDER BY `value` ASC";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch_assoc()) {
+                            ?>
+                            <tr>
+                                <td><?php echo $row['value']; ?></td>
+                                <td class="d-flex">
+                                    <i class="fas fa-edit text-primary" onclick="edit('<?php echo $row['value']; ?>', 'invoiceitem')"></i>
+                                </td>
+                                <td>
+                                    <a href="deleteOption.php?table=invoiceitem&id=<?php echo $row['value']; ?>">
+                                        <i class="fas fa-trash text-danger"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php
+                            }
+                        ?> -->
                 </table>
+
+                <nav>
+                    <ul class="pagination" id="paginationInvoiceItem"></ul>
+                </nav>
             </div>
             <div class="col-12 col-md-6">
                 <div class="text-center h5">Payment Mode</div>
-                <table class="table table-bordered border-warning">
-                    <?php
-                    $sql = "SELECT * FROM `paymentmode` ORDER BY `value` ASC";
-                    $result = $conn->query($sql);
-                    while ($row = $result->fetch_assoc()) {
-                    ?>
+                <table id="paymentmode" class="table table-bordered border-warning">
+                    <tbody></tbody>
+                    <!-- <?php
+                            $sql = "SELECT * FROM `paymentmode` ORDER BY `value` ASC";
+                            $result = $conn->query($sql);
+                            while ($row = $result->fetch_assoc()) {
+                            ?>
                         <tr>
                             <td><?php echo $row['value']; ?></td>
                             <td class="d-flex">
@@ -109,9 +133,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </td>
                         </tr>
                     <?php
-                    }
-                    ?>
+                            }
+                    ?> -->
                 </table>
+                <nav>
+                    <ul class="pagination" id="paginationPaymentMode"></ul>
+                </nav>
             </div>
         </div>
 
@@ -126,6 +153,201 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
         </script>
     </div>
+
+    <script>
+        function matchStringInArray(array, searchString) {
+            return array.filter(item => {
+                return Object.values(item).some(value =>
+                    value.toString().toLowerCase().includes(searchString.toLowerCase())
+                );
+            });
+        }
+
+        let matchedResultsInvoice = matchStringInArray(InvoiceItemData, ""); // Store the results in a variable
+
+        // Pagination variables
+        let currentPage = 1;
+        const rowsPerPage = 10;
+
+        // Function to display table rows based on the current page
+        function displayTableRowsInvoice(page) {
+            const tableBody = document.querySelector("#invoiceitem tbody");
+            tableBody.innerHTML = "";
+
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            const rows = matchedResultsInvoice.slice(startIndex, endIndex);
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td>${row.value}</td>
+                <td class="d-flex">
+                    <i class="fas fa-edit text-primary" onclick="edit('${row.value}', 'invoiceitem')"></i>
+                </td>
+                <td>
+                    <a href="deleteOption.php?table=invoiceitem&id=${row.value}">
+                        <i class="fas fa-trash text-danger"></i>
+                    </a>
+                </td>
+            `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to set up pagination controls with "Next" and "Previous"
+        function setupPaginationInvoice() {
+            const pagination = document.getElementById("paginationInvoiceItem");
+            pagination.innerHTML = "";
+
+            const pageCount = Math.ceil(matchedResultsInvoice.length / rowsPerPage);
+
+            // Previous Button
+            const prevLi = document.createElement("li");
+            prevLi.classList.add("page-item");
+            prevLi.innerHTML = `<div class="page-link">Previous</div>`;
+            if (currentPage === 1) {
+                prevLi.classList.add("disabled");
+            }
+            prevLi.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRowsInvoice(currentPage);
+                    setupPaginationInvoice();
+                }
+            });
+            pagination.appendChild(prevLi);
+
+            // Page Numbers
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement("li");
+                li.classList.add("page-item");
+                li.innerHTML = `<div class="page-link">${i}</div>`;
+
+                if (i === currentPage) {
+                    li.classList.add("active");
+                }
+
+                li.addEventListener("click", () => {
+                    currentPage = i;
+                    displayTableRowsInvoice(currentPage);
+                    setupPaginationInvoice();
+                });
+
+                pagination.appendChild(li);
+            }
+
+            // Next Button
+            const nextLi = document.createElement("li");
+            nextLi.classList.add("page-item");
+            nextLi.innerHTML = `<div class="page-link">Next</div>`;
+            if (currentPage === pageCount) {
+                nextLi.classList.add("disabled");
+            }
+            nextLi.addEventListener("click", () => {
+                if (currentPage < pageCount) {
+                    currentPage++;
+                    displayTableRowsInvoice(currentPage);
+                    setupPaginationInvoice();
+                }
+            });
+            pagination.appendChild(nextLi);
+        }
+
+        // Initial setup
+        displayTableRowsInvoice(currentPage);
+        setupPaginationInvoice();
+
+        let matchedResultsPayment = matchStringInArray(PaymentModeData, ""); // Store the results in a variable
+        // Function to display table rows based on the current page
+        function displayTableRowsPayment(page) {
+            const tableBody = document.querySelector("#paymentmode tbody");
+            tableBody.innerHTML = "";
+
+            const startIndex = (page - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+
+            const rows = matchedResultsPayment.slice(startIndex, endIndex);
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td>${row.value}</td>
+                <td class="d-flex">
+                    <i class="fas fa-edit text-primary" onclick="edit('${row.value}', 'paymentmode')"></i>
+                </td>
+                <td>
+                    <a href="deleteOption.php?table=paymentmode&id=${row.value}">
+                        <i class="fas fa-trash text-danger"></i>
+                    </a>
+                </td>
+            `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        // Function to set up pagination controls with "Next" and "Previous"
+        function setupPaginationPayment() {
+            const pagination = document.getElementById("paginationPaymentMode");
+            pagination.innerHTML = "";
+
+            const pageCount = Math.ceil(matchedResultsPayment.length / rowsPerPage);
+
+            // Previous Button
+            const prevLi = document.createElement("li");
+            prevLi.classList.add("page-item");
+            prevLi.innerHTML = `<div class="page-link">Previous</div>`;
+            if (currentPage === 1) {
+                prevLi.classList.add("disabled");
+            }
+            prevLi.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRowsPayment(currentPage);
+                    setupPaginationPayment();
+                }
+            });
+            pagination.appendChild(prevLi);
+
+            // Page Numbers
+            for (let i = 1; i <= pageCount; i++) {
+                const li = document.createElement("li");
+                li.classList.add("page-item");
+                li.innerHTML = `<div class="page-link">${i}</div>`;
+
+                if (i === currentPage) {
+                    li.classList.add("active");
+                }
+
+                li.addEventListener("click", () => {
+                    currentPage = i;
+                    displayTableRowsPayment(currentPage);
+                    setupPaginationPayment();
+                });
+
+                pagination.appendChild(li);
+            }
+
+            // Next Button
+            const nextLi = document.createElement("li");
+            nextLi.classList.add("page-item");
+            nextLi.innerHTML = `<div class="page-link">Next</div>`;
+            if (currentPage === pageCount) {
+                nextLi.classList.add("disabled");
+            }
+            nextLi.addEventListener("click", () => {
+                if (currentPage < pageCount) {
+                    currentPage++;
+                    displayTableRowsPayment(currentPage);
+                    setupPaginationPayment();
+                }
+            });
+            pagination.appendChild(nextLi);
+        }
+
+        // Initial setup
+        displayTableRowsPayment(currentPage);
+        setupPaginationPayment();
+    </script>
 </body>
 
 </html>

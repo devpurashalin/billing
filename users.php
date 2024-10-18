@@ -60,7 +60,7 @@
             </thead>
             <tbody>
                 <?php
-                $sql = "SELECT * FROM users";
+                $sql = "SELECT * FROM users WHERE `name` != 'admin' ORDER BY `name` ASC";
                 $result = $conn->query($sql);
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {

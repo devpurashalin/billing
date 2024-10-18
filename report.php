@@ -3,9 +3,9 @@ include 'db.php';
 $datefrom = $_POST['datefrom'] ?? '';
 $dateto = $_POST['dateto'] ?? '';
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
-    $sql = "SELECT * FROM `invoicetotal` WHERE STR_TO_DATE(date, '%Y-%m-%d') BETWEEN '$datefrom' AND '$dateto' ORDER BY `createdAt` DESC;";
+    $sql = "SELECT * FROM `invoicetotal` WHERE STR_TO_DATE(date, '%Y-%m-%d') BETWEEN '$datefrom' AND '$dateto' ORDER BY `invoicetotal`.`invoiceNo` DESC;";
 } else {
-    $sql = "SELECT * FROM `invoicetotal` ORDER BY `createdAt` DESC";
+    $sql = "SELECT * FROM `invoicetotal` ORDER BY `invoicetotal`.`invoiceNo` DESC";
 }
 $result = $conn->query($sql);
 if ($result->num_rows > 0) {
