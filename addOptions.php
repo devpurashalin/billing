@@ -51,6 +51,13 @@ if ($result->num_rows > 0) {
         td {
             border: 0px !important;
         }
+
+        .page-link:hover {
+            cursor: pointer;
+            background-color: gray;
+            font-weight: bold;
+            color: white;
+        }
     </style>
 </head>
 
